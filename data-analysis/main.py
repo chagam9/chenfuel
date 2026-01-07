@@ -135,6 +135,22 @@ def get_current_prices(tickers):
         print(f"Error fetching prices: {e}")
         return {}
 
+def get_usd_ils_rate():
+    print("Fetching USD/ILS exchange rate...")
+    try:
+        # Ticker for USD to ILS (Yahoo Finance standard)
+        ticker = "USDILS=X" 
+        data = yf.download(ticker, period="1d", progress=False)['Close']
+        if isinstance(data, pd.Series):
+             rate = float(data.iloc[-1])
+        elif isinstance(data, pd.DataFrame):
+             rate = float(data.iloc[-1].iloc[0]) # Handle potential dataframe structure
+        print(f"Current USD/ILS Rate: {rate:.4f}")
+        return rate
+    except Exception as e:
+        print(f"Error fetching exchange rate, defaulting to 3.65: {e}")
+        return 3.65
+
 def main():
     print("Starting Chenfuel Portfolio Opportunity Analysis [English]...")
     
@@ -169,10 +185,28 @@ def main():
     if 'currency' in df.columns:
         df['currency'] = df['currency'].replace({'דולר': 'USD', 'ש"ח': 'ILS'})
 
+    # --- Fetch Rate ---
+    usd_ils_rate = get_usd_ils_rate()
+
+    # --- Normalize to ILS ---
+    # Create normalized columns
+    def normalize(row, col_name):
+        val = row[col_name]
+        if row['currency'] == 'USD':
+            return val * usd_ils_rate
+        return val
+
+    # We need to ensure we don't crash if currency is missing
+    df['profit_loss_ils'] = df.apply(lambda row: normalize(row, 'profit_loss'), axis=1)
+    df['fees_ils'] = df.apply(lambda row: normalize(row, 'fees'), axis=1)
+    # Tax is already split into 'tax_il' (ILS) and 'tax_foreign' (likely ILS converted at source, or USD?)
+    # The header is 'מס חו"ל בשקלים' which means 'Foreign Tax in Shekels'. So it is ALREADY ILS.
+    # 'מס שנוכה/הוחזר בארץ' is also ILS.
+    df['total_tax_ils'] = df['tax_il'] + df['tax_foreign']
+    
+    df['net_amount_ils'] = df.apply(lambda row: normalize(row, 'net_amount'), axis=1)
+
     # --- 1. Identify Sold Positions & Tickers ---
-    # Action 'מכירה' -> 'Sell' ? Or keep original text?
-    # Better to normalize action too.
-    # Hebrew 'קניה' -> 'Buy', 'מכירה' -> 'Sell'
     if 'action' in df.columns:
         df['action_en'] = df['action'].replace({'קניה': 'Buy', 'מכירה': 'Sell'})
     
@@ -231,60 +265,37 @@ def main():
         })
 
     # --- 4. Summary & Charts ---
-    # Filter for closing transactions (Sales) to calculate correct Cost Basis
-    # Assuming 'profit_loss' is only relevant for sales.
-    # Invested (Cost Basis) = Net Proceeds (Sold amount) - Profit (or + Loss)
+    # Global Totals (Normalized to ILS)
+    total_pl_gross_ils = df['profit_loss_ils'].sum()
+    total_fees_ils = df['fees_ils'].sum()
+    total_tax_ils = df['total_tax_ils'].sum() # Already ILS
     
-    # Use sales_df which we already filtered for 'Sell' action, but make sure we have all numeric columns
-    # We need 'net_amount' and 'profit_loss' from the main df for global totals, 
-    # but for "Invested" specifically, we should look at what generated that profit.
+    # Invested (Risk) Calculation
+    # Filter: Sales Only
+    # Invested = Proceeds (Net Amount) - Gross Profit
+    # Use Normalized columns!
     
-    # Let's use the main df but iterate or sum based on logic
-    # Total PL is Sum of 'profit_loss' column
-    total_pl_gross = df['profit_loss'].sum()
-    total_fees = df['fees'].sum()
-    total_tax = df['tax_il'].sum() + df['tax_foreign'].sum()
+    sales_indices = df['action_en'] == 'Sell'
+    total_proceeds_ils = df.loc[sales_indices, 'net_amount_ils'].sum()
+    total_gross_pl_sales_ils = df.loc[sales_indices, 'profit_loss_ils'].sum()
     
-    total_net_profit = total_pl_gross + total_fees - total_tax # Fees are usually negative in CSV? If not, subtract.
-    # In the CSV example: 'עמלות ודמי ניהול' (Fees) seems to be positive or negative? 
-    # Let's check previous code logic.
-    # In JS: totalFees += parseFloat(row['עמלות ודמי ניהול'] || 0); 
-    # Usually fees are negative. If they are positive string "15", we need to know.
-    # Looking at main.py numeric cleaning:
-    # df[col] = df[col].astype(str).str.replace(',', '').apply(pd.to_numeric ... 
-    # If the CSV has "-15", it becomes -15. If "15", it is 15.
-    # Let's assume standard conventions: Profit can be neg/pos. Fees usually negative. Tax usually positive (deducted).
-    
-    # Let's look at the JS logic again from previous files...
-    # summary.total_fees was just sum.
-    # summary.total_pl was just sum.
-    
-    # Let's assume Total Net = Total PL (Gross) + Total Fees (if neg) - Total Tax (if positive).
-    # actually better: Net = Gross PL - abs(Fees) - abs(Tax).
-    # To be safe (since we don't see exact CSV values right now), let's rely on the user's "Neto" request.
-    
-    # Risk (Invested Capital) calculation:
-    # We only care about closed positions to match the Realized PL.
-    # Invested = Proceeds - Gross PL.
-    # Proceeds = 'net_amount'.
-    
-    total_proceeds = df.loc[df['action_en'] == 'Sell', 'net_amount'].sum()
-    total_gross_pl_sales = df.loc[df['action_en'] == 'Sell', 'profit_loss'].sum()
-    
-    total_invested = total_proceeds - total_gross_pl_sales
+    total_invested_ils = total_proceeds_ils - total_gross_pl_sales_ils
     
     # Net ROI
-    # Net Profit for ROI = Gross PL + Fees - Tax (Assuming fees are negative in data, if not subtract).
-    # Let's blindly trust the columns sum for now, but usually Tax is positive in these reports (amount deducted).
-    # So Net = Gross + Fees - Tax.
+    # ROI = (Net Profit / Invested) * 100
+    # Net Profit = Gross PL + Fees - Tax
+    # Note: Fees are usually negative. If CSV has them positive, logic reverses.
+    # Assuming fees are negative/deduction in 'profit_loss'? No, 'profit_loss' is usually Gross.
+    # Let's assume standard: Net = Gross + Fees (if neg) - Tax.
     
-    total_net_return = total_pl_gross + total_fees - total_tax
+    total_net_return_ils = total_pl_gross_ils + total_fees_ils - total_tax_ils
     
     roi_percentage = 0.0
-    if total_invested != 0:
-        roi_percentage = (total_net_return / total_invested) * 100
+    if total_invested_ils != 0:
+        roi_percentage = (total_net_return_ils / total_invested_ils) * 100
 
-    security_pl = df.groupby('symbol')['profit_loss'].sum().reset_index()
+    # Chart P/L (Using original values or normalized? Normalized is better for comparison)
+    security_pl = df.groupby('symbol')['profit_loss_ils'].sum().reset_index()
     security_pl.columns = ['name', 'val']
     security_pl = security_pl.sort_values('val', ascending=False)
     chart_pl_data = pd.concat([security_pl.head(5), security_pl.tail(5)]).drop_duplicates().to_dict(orient='records')
@@ -318,12 +329,13 @@ def main():
     # --- 5. Final Output ---
     dashboard_data = {
         "summary": {
-            "total_pl": total_pl_gross, # Keep consistent with previous
-            "total_fees": total_fees,
-            "total_tax": total_tax,
-            "total_invested": total_invested,
+            "total_pl": total_pl_gross_ils,
+            "total_fees": total_fees_ils,
+            "total_tax": total_tax_ils,
+            "total_invested": total_invested_ils,
             "roi_percentage": roi_percentage,
-            "total_net_return": total_net_return
+            "total_net_return": total_net_return_ils,
+            "exchange_rate": usd_ils_rate
         },
         "charts": {
             "pl_by_security": chart_pl_data,

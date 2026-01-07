@@ -506,7 +506,11 @@
             roiEl.textContent = `${summary.roi_percentage.toFixed(2)}%`;
             roiEl.style.color = summary.roi_percentage >= 0 ? '#10b981' : '#ef4444';
 
-            document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('en-US');
+            document.getElementById('lastUpdated').innerHTML =
+                `${new Date(data.metadata.generated_at).toLocaleString('en-US')} <br>
+                <span style="font-size: 0.75rem; color: #64748b;">
+                    Exchange Rate: 1 USD = ${parseFloat(data.summary.exchange_rate || 0).toFixed(2)} ILS
+                </span>`;
 
             // Version
             if (data.metadata.version) {

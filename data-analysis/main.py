@@ -311,97 +311,109 @@ def main():
     total_fees_ils = df['fees_ils'].sum()
     total_tax_ils = df['total_tax_ils'].sum() 
     
-    # --- MAX EXPOSURE ALGORITHM ---
-    # We need to reconstruct the "Capital Employed" timeline.
-    # Sort ALL transactions by date
-    
+    # --- MAX EXPOSURE & ROAC ALGORITHM ---
     exposure_df = df.copy()
     exposure_df.sort_values('date_obj', inplace=True)
     
-    # Calculate Delta for each row
-    # If Buy: Delta = + (Net Amount). Usually Net Amount is negative for Buy?
-    # Let's check: Yes, Buy consumes cash, so Net Amount is negative in bank, but Positive for "Invested Capital".
-    # If Sell: Delta = - (Principal). Principal = (Net Proceeds - Profit).
-    # Net Amount is positive for Sell.
-    
     def calculate_capital_delta(row):
-        # We need absolute values of what the ASSET cost was.
-        
-        # 'net_amount_ils' is usually:
-        # Buy: -1000 ILS (Cash out)
-        # Sell: +1200 ILS (Cash in)
-        
         net_val = row['net_amount_ils']
-        action = row['action_en'] # Buy / Sell
-        
+        action = row['action_en']
         if action == 'Buy':
-            # We INVESTED money. Capital At Risk increases.
-            # abs(-1000) = 1000
             return abs(net_val)
-        
         elif action == 'Sell':
-            # We RELEASED money. Capital At Risk decreases.
-            # But we only release the PRINCIPAL. The Profit is new money, not capital return.
-            # Principal = Proceeds (Net Amount) - Net Profit? 
-            # OR Principal = Proceeds - Gross Profit + Deductions?
-            
-            # Simplest: Cost Basis = Proceeds - Profit.
-            # If I sold for 1200 and profit was 200, my cost was 1000.
-            # So I reduce exposure by 1000.
-            
-            # Note: profit_loss_ils is the realized profit for this row.
             proceeds = abs(net_val)
             profit = row['profit_loss_ils']
-            
-            # Cost Basis (Principal)
             principal = proceeds - profit
-            
-            # Decrease exposure
             return -1 * principal
-            
         return 0
 
     exposure_df['capital_delta'] = exposure_df.apply(calculate_capital_delta, axis=1)
     
-    # Group by Date to handle same-day trades cleanly
+    # Daily Aggregation
     daily_deltas = exposure_df.groupby('date_obj')['capital_delta'].sum()
     
-    # Cumulative Sum to get "Current Capital At Risk"
+    # Exposure Series
     exposure_series = daily_deltas.cumsum()
+    # Ensure no negative exposure (baseline issues)
+    exposure_series = exposure_series.clip(lower=0)
     
-    # Handle negative exposure?
-    # If data is partial (missing initial buys), this might go negative.
-    # User just wants "Max Exposure".
-    # If it goes negative, it implies our baseline 0 was wrong.
-    # But strictly, Max Exposure is the Max(cumsum).
-    # What if it starts at -50000? Max might be -20000.
-    # We should offset it so the minimum is 0? Or assume 0 is real 0?
-    # "Invested 10, Sold 8 time".
-    # Let's assume the series represents "Change in Capital".
-    # Max Exposure = max(exposure_series).
-    # Ideally we'd impose a floor of 0 if we assume clean data, but clean data isn't guaranteed.
+    # 1. Max Exposure
+    max_exposure_ils = exposure_series.max() if not exposure_series.empty else 0
     
-    # Let's clean the series for the chart: Date -> Value
-    exposure_chart_data = []
-    
-    # Determine Max
-    if not exposure_series.empty:
-        max_exposure_ils = exposure_series.max()
-        # Ensure it's not negative (if huge history missing)
-        if max_exposure_ils < 0:
-            max_exposure_ils = 0 # Fallback
-    else:
-        max_exposure_ils = 0
-        
-    # Convert series to list of dicts for frontend
-    # exposure_series index is Timestamps
+    # 2. Average Exposure (for ROAC)
+    avg_exposure_ils = exposure_series.mean() if not exposure_series.empty else 0
     exposure_chart_data = [{"date": ts.strftime('%Y-%m-%d'), "val": val} for ts, val in exposure_series.items()]
 
-    # Net ROI Calculation
-    # True ROI = Total Net Profit / Max Exposure
+    # --- ADVANCED METRICS ---
     
+    # 3. Profit Factor & Win Rate
+    # Filter for Sales (Realized Events)
+    sales = df.loc[df['action_en'] == 'Sell']
+    winners = sales.loc[sales['profit_loss_ils'] > 0, 'profit_loss_ils']
+    losers = sales.loc[sales['profit_loss_ils'] <= 0, 'profit_loss_ils'] # Includes 0 as not win
+    
+    total_win_amt = winners.sum()
+    total_loss_amt = abs(losers.sum())
+    
+    profit_factor = 0
+    if total_loss_amt == 0:
+        profit_factor = 999.0 if total_win_amt > 0 else 0
+    else:
+        profit_factor = total_win_amt / total_loss_amt
+        
+    win_rate = 0
+    total_trades = len(sales)
+    if total_trades > 0:
+        win_rate = (len(winners) / total_trades) * 100
+
+    # 4. ROAC (Return on Average Capital)
     total_net_return_ils = total_pl_gross_ils + total_fees_ils - total_tax_ils
+    roac_percentage = 0
+    if avg_exposure_ils > 0:
+        roac_percentage = (total_net_return_ils / avg_exposure_ils) * 100
+
+    # 5. Max Drawdown (MDD)
+    # Construct Daily P/L Series
+    # Group profit_loss_ils by date
+    daily_pl = df.groupby('date_obj')['profit_loss_ils'].sum()
+    # Reindex to match exposure series (all dates)
+    full_idx = exposure_series.index
+    daily_pl = daily_pl.reindex(full_idx).fillna(0)
     
+    # Cumulative P/L (Equity Curve approximation starting from 0)
+    equity_curve = daily_pl.cumsum()
+    
+    # Calculate Drawdown
+    running_max = equity_curve.cummax()
+    drawdown = running_max - equity_curve # Positive value representing the drop
+    
+    max_drawdown_ils = drawdown.max()
+    
+    # 6. Sharpe Ratio (Annualized)
+    # Daily Return % = Daily P/L / Daily Capital At Risk
+    # Avoid division by zero
+    
+    daily_returns_pct = pd.Series(index=daily_pl.index, dtype=float)
+    
+    # Align P/L and Exposure
+    for dt in daily_pl.index:
+        cap = exposure_series.loc[dt]
+        pl = daily_pl.loc[dt]
+        if cap > 1000: # Ignore noise on tiny capital
+            daily_returns_pct.loc[dt] = pl / cap
+        else:
+            daily_returns_pct.loc[dt] = 0.0
+            
+    # Calculate Sharpe
+    # Assume Rf = 0 (Risk Free Rate)
+    mean_daily_ret = daily_returns_pct.mean()
+    std_daily_ret = daily_returns_pct.std()
+    
+    sharpe_ratio = 0
+    if std_daily_ret > 0:
+        sharpe_ratio = (mean_daily_ret / std_daily_ret) * (252**0.5)
+
+    # Net ROI (on Peak Capital) - "Return on Risk"
     roi_percentage = 0.0
     if max_exposure_ils > 0:
         roi_percentage = (total_net_return_ils / max_exposure_ils) * 100
@@ -443,10 +455,17 @@ def main():
             "total_pl": total_pl_gross_ils,
             "total_fees": total_fees_ils,
             "total_tax": total_tax_ils,
-            "total_invested": max_exposure_ils, # Replaced 'turnover' with Max Exposure
+            "total_invested": max_exposure_ils,
             "roi_percentage": roi_percentage,
             "total_net_return": total_net_return_ils,
-            "exchange_rate": "Historical (Date Specific)"
+            "exchange_rate": "Historical (Date Specific)",
+            "advanced_metrics": {
+                "roac_percentage": roac_percentage,
+                "profit_factor": profit_factor,
+                "win_rate": win_rate,
+                "max_drawdown": max_drawdown_ils,
+                "sharpe_ratio": sharpe_ratio
+            }
         },
         "charts": {
             "pl_by_security": chart_pl_data,

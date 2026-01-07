@@ -148,6 +148,53 @@
             margin-bottom: 2rem;
         }
 
+        /* Tooltip Styling */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #94a3b8;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: rgba(15, 23, 42, 0.95);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            /* Position above */
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 1024px) {
 
             .charts-container,
@@ -320,34 +367,132 @@
                 </div>
             </div>
 
-            <!-- EXPOSURE CHART -->
-            <div class="card" style="margin-top: 1rem;">
-                <h2>Capital at Risk Over Time (Exposure)</h2>
-                <div class="chart-container" style="height: 300px;">
-                    <canvas id="chartExposure"></canvas>
-                </div>
+        </div>
+
+        <!-- EXPOSURE CHART -->
+        <div class="card" style="margin-top: 1rem;">
+            <h2>Capital at Risk Over Time (Exposure)</h2>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="chartExposure"></canvas>
             </div>
         </div>
 
-        <!-- TAB: TRANSACTIONS -->
-        <div id="tab-transactions" class="tab-content">
-            <div class="card">
-                <div class="controls">
-                    <h2>Transaction History</h2>
-                    <input type="text" id="searchInput" placeholder="Search by symbol...">
+        <!-- ADVANCED ANALYTICS (PRO) -->
+        <div class="card" style="margin-top: 1rem;">
+            <h2>Advanced Analytics (Pro)</h2>
+            <div class="dashboard-grid" style="grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-top: 1rem;">
+
+                <!-- ROAC -->
+                <div style="text-align: center;">
+                    <div class="tooltip">ROAC
+                        <span class="tooltip-text">תשואה על הון ממוצע: מראה כמה הכסף "שעבד" בפועל הניב, בממוצע (ולא רק
+                            על השיא).</span>
+                    </div>
+                    <div class="value" style="font-size: 1.5rem;" id="val-roac">0%</div>
                 </div>
-                <div class="table-container">
-                    <table id="transactionsTable">
+
+                <!-- Max Drawdown -->
+                <div style="text-align: center;">
+                    <div class="tooltip">Max Drawdown
+                        <span class="tooltip-text">מקסימום דרודאון: רגע השפל הכי עמוק מהשיא. המדד החשוב ביותר
+                            לסיכון.</span>
+                    </div>
+                    <div class="value negative" style="font-size: 1.5rem;" id="val-mdd">₪0</div>
+                </div>
+
+                <!-- Profit Factor -->
+                <div style="text-align: center;">
+                    <div class="tooltip">Profit Factor
+                        <span class="tooltip-text">גורם הרווח: על כל שקל שהפסדת, כמה שקלים הרווחת? (מעל 1.5 זה
+                            טוב).</span>
+                    </div>
+                    <div class="value" style="font-size: 1.5rem;" id="val-pf">0</div>
+                </div>
+
+                <!-- Win Rate -->
+                <div style="text-align: center;">
+                    <div class="tooltip">Win Rate
+                        <span class="tooltip-text">אחוז הצלחה: אחוז העסקאות שהסתיימו ברווח חיובי.</span>
+                    </div>
+                    <div class="value" style="font-size: 1.5rem;" id="val-winrate">0%</div>
+                </div>
+
+                <!-- Sharpe Ratio -->
+                <div style="text-align: center;">
+                    <div class="tooltip">Sharpe Ratio
+                        <span class="tooltip-text">מדד שארפ: התשואה שהושגה לכל יחידת סיכון (תנודתיות). גובה > 1 נחשב
+                            טוב.</span>
+                    </div>
+                    <div class="value" style="font-size: 1.5rem;" id="val-sharpe">0</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: TRANSACTIONS -->
+    <div id="tab-transactions" class="tab-content">
+        <div class="card">
+            <div class="controls">
+                <h2>Transaction History</h2>
+                <input type="text" id="searchInput" placeholder="Search by symbol...">
+            </div>
+            <div class="table-container">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Symbol</th>
+                            <th>Action</th>
+                            <th style="text-align: right;">Qty</th>
+                            <th style="text-align: right;">Price</th>
+                            <th>Currency</th>
+                            <th style="text-align: right;">Fees</th>
+                            <th style="text-align: right;">P/L</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: WHAT IF -->
+    <div id="tab-whatif" class="tab-content">
+        <div class="dashboard-grid">
+            <div class="card" id="card-opportunity">
+                <h2>Missed Opportunity (If Held)</h2>
+                <div class="value">--</div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
+                    * Calculation: (Current Price - Sale Price) × Quantity
+                </div>
+            </div>
+
+            <!-- Top Regrets -->
+            <div class="card" style="grid-column: span 1;">
+                <h2 style="color: #ef4444;">Missed Gains (Price went UP)</h2>
+                <div class="table-container" style="max-height: 250px;">
+                    <table id="tableRegrets">
                         <thead>
                             <tr>
-                                <th>Date</th>
                                 <th>Symbol</th>
-                                <th>Action</th>
-                                <th style="text-align: right;">Qty</th>
-                                <th style="text-align: right;">Price</th>
-                                <th>Currency</th>
-                                <th style="text-align: right;">Fees</th>
-                                <th style="text-align: right;">P/L</th>
+                                <th style="text-align: right;">Missed</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Smart Moves -->
+            <div class="card" style="grid-column: span 1;">
+                <h2 style="color: #10b981;">Smart Sells (Price went DOWN)</h2>
+                <div class="table-container" style="max-height: 250px;">
+                    <table id="tableSmart">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th style="text-align: right;">Saved</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -356,76 +501,32 @@
             </div>
         </div>
 
-        <!-- TAB: WHAT IF -->
-        <div id="tab-whatif" class="tab-content">
-            <div class="dashboard-grid">
-                <div class="card" id="card-opportunity">
-                    <h2>Missed Opportunity (If Held)</h2>
-                    <div class="value">--</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
-                        * Calculation: (Current Price - Sale Price) × Quantity
-                    </div>
-                </div>
-
-                <!-- Top Regrets -->
-                <div class="card" style="grid-column: span 1;">
-                    <h2 style="color: #ef4444;">Missed Gains (Price went UP)</h2>
-                    <div class="table-container" style="max-height: 250px;">
-                        <table id="tableRegrets">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th style="text-align: right;">Missed</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Smart Moves -->
-                <div class="card" style="grid-column: span 1;">
-                    <h2 style="color: #10b981;">Smart Sells (Price went DOWN)</h2>
-                    <div class="table-container" style="max-height: 250px;">
-                        <table id="tableSmart">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th style="text-align: right;">Saved</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="controls">
+                <h2>Opportunity Details</h2>
             </div>
-
-            <div class="card" style="margin-top: 1.5rem;">
-                <div class="controls">
-                    <h2>Opportunity Details</h2>
-                </div>
-                <div class="table-container" style="max-height: 600px;">
-                    <table id="tableOpportunities">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Symbol</th>
-                                <th style="text-align:right;">Sold @</th>
-                                <th style="text-align:right;">Current</th>
-                                <th style="text-align:right;">Diff/Share</th>
-                                <th style="text-align:right;">Total Missed</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+            <div class="table-container" style="max-height: 600px;">
+                <table id="tableOpportunities">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Symbol</th>
+                            <th style="text-align:right;">Sold @</th>
+                            <th style="text-align:right;">Current</th>
+                            <th style="text-align:right;">Diff/Share</th>
+                            <th style="text-align:right;">Total Missed</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <div
-            style="text-align: center; margin-top: 3rem; color: var(--text-secondary); font-size: 0.8rem; border-top: var(--glass-border); padding-top: 1rem;">
-            Last Updated: <span id="lastUpdated"></span> | Powered by Python Analysis
-        </div>
+    <div
+        style="text-align: center; margin-top: 3rem; color: var(--text-secondary); font-size: 0.8rem; border-top: var(--glass-border); padding-top: 1rem;">
+        Last Updated: <span id="lastUpdated"></span> | Powered by Python Analysis
+    </div>
     </div>
 
     <script>
@@ -523,6 +624,43 @@
             // Version
             if (data.metadata.version) {
                 document.getElementById('verNum').textContent = data.metadata.version;
+            }
+
+            // Advanced Metrics (Pro)
+            if (summary.advanced_metrics) {
+                const am = summary.advanced_metrics;
+
+                // ROAC
+                const roacEl = document.getElementById('val-roac');
+                if (roacEl) {
+                    roacEl.textContent = `${am.roac_percentage.toFixed(2)}%`;
+                    roacEl.className = `value ${am.roac_percentage >= 0 ? 'positive' : 'negative'}`;
+                }
+
+                // MDD
+                const mddEl = document.getElementById('val-mdd');
+                if (mddEl) mddEl.textContent = `-${fmtMoney(am.max_drawdown)}`;
+
+                // Profit Factor
+                const pfEl = document.getElementById('val-pf');
+                if (pfEl) {
+                    pfEl.textContent = am.profit_factor.toFixed(2);
+                    pfEl.className = `value ${am.profit_factor >= 1.5 ? 'positive' : ''}`;
+                }
+
+                // Win Rate
+                const wrEl = document.getElementById('val-winrate');
+                if (wrEl) {
+                    wrEl.textContent = `${am.win_rate.toFixed(1)}%`;
+                    wrEl.className = `value ${am.win_rate >= 50 ? 'positive' : ''}`;
+                }
+
+                // Sharpe
+                const sharpeEl = document.getElementById('val-sharpe');
+                if (sharpeEl) {
+                    sharpeEl.textContent = am.sharpe_ratio.toFixed(2);
+                    sharpeEl.className = `value ${am.sharpe_ratio >= 1 ? 'positive' : ''}`;
+                }
             }
 
             // 2. Overview Charts

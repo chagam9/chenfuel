@@ -278,30 +278,56 @@ def main():
 
     print(f"\n--- Opportunity Analysis ---")
     print(f"Analyzed {len(opportunity_list)} sales events.")
+    
+    # --- Versioning ---
+    version_file = "/app/version.txt" # We will mount this
+    current_version = 0.00
+    
+    # Read existing version
+    if os.path.exists(version_file):
+        try:
+            with open(version_file, "r") as f:
+                content = f.read().strip()
+                if content:
+                    current_version = float(content)
+        except Exception as e:
+            print(f"Warning: Could not read version file: {e}")
+
+    # Increment
+    new_version = round(current_version + 0.01, 2)
+    
+    # Save new version
+    try:
+        with open(version_file, "w") as f:
+            f.write(f"{new_version:.2f}")
+        print(f"Version updated to: {new_version}")
+    except Exception as e:
+        print(f"Warning: Could not save version file: {e}")
+        # If we can't save, we usually assume we are in a read-only container or something, 
+        # but for this setup we expect volume mount.
+
+    # Update Metadata
+    dashboard_data['metadata']['version'] = f"{new_version:.2f}"
+    
     print(f"Saving dashboard data to {output_file}...")
     
-    # Sanitize NaNs before dumping
-    # Function to recursively replace NaN with None (which becomes null in JSON)
-    # or handle Infinity if needed.
-    class NaNEncoder(json.JSONEncoder):
-        def default(self, obj):
-            import math
-            if isinstance(obj, float):
-                if math.isnan(obj) or math.isinf(obj):
-                    return None
-            if isinstance(obj, pd.Timestamp):
-                return str(obj)
-            return super().default(obj)
-            
-    # Alternatively, simply replace in the big dict:
-    dashboard_data_sanitized = json.loads(json.dumps(dashboard_data, default=str).replace("NaN", "null"))
+    # Robust NaN Sanitization
+    import math
+    def sanitize(obj):
+        if isinstance(obj, float):
+            if math.isnan(obj) or math.isinf(obj):
+                return None
+            return obj
+        elif isinstance(obj, dict):
+            return {k: sanitize(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [sanitize(v) for v in obj]
+        return obj
+
+    dashboard_data_clean = sanitize(dashboard_data)
 
     with open(output_file, "w") as f:
-        # Standard json.dump might still output NaN if allow_nan=True (default).
-        # We want to force it to valid JSON.
-        # But safest is to simple string manip or ignore_nan. 
-        # Actually standard simple fix:
-        json.dump(dashboard_data_sanitized, f, indent=4)
+        json.dump(dashboard_data_clean, f, indent=4, default=str)
         
     print("Analysis Complete.")
 

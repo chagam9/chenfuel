@@ -2,9 +2,8 @@ services:
   analyzer:
     build: ./data-analysis
     volumes:
-      - .:/app/web # Output JSON to root (via /app/web path in script)
-      - ./data.csv:/app/data.csv # Input CSV from root
-      - ./data-analysis:/app # Source code
+      - ./web:/app/web
+      - ./data-analysis:/app
     # This command overrides the CMD in Dockerfile, ensuring we run the file from the volume
     command: python main.py
 
@@ -13,4 +12,4 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/usr/share/nginx/html # Serve root directory
+      - ./web:/usr/share/nginx/html

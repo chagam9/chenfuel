@@ -195,7 +195,12 @@
 
     <!-- Main Content Wrapper -->
     <div id="mainContent" style="filter: blur(8px); transition: filter 0.5s;">
-        <h1>דשבורד השקעות - אבא</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>דשבורד השקעות - אבא</h1>
+            <div id="versionDisplay" style="color: rgba(255,255,255,0.3); font-family: monospace; font-size: 0.9rem;">
+                v<span id="verNum">--</span>
+            </div>
+        </div>
 
         <div id="loading" style="text-align:center; color: var(--text-secondary);">טוען נתונים...</div>
 
@@ -333,6 +338,11 @@
             document.getElementById('val-fees').textContent = fmtMoney(summary.total_fees);
             document.getElementById('val-tax').textContent = fmtMoney(summary.total_tax);
             document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('he-IL');
+
+            // Version
+            if (data.metadata.version) {
+                document.getElementById('verNum').textContent = data.metadata.version;
+            }
 
             // 2. Charts
             renderPLChart(data.charts.pl_by_security);

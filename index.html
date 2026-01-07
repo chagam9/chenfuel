@@ -303,7 +303,7 @@
         // --- Data Logic ---
         const fmtMoney = (num) => new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(num);
         const fmtNum = (num) => new Intl.NumberFormat('he-IL').format(num);
-        
+
         let allTransactions = [];
 
         async function loadDashboardData() {
@@ -311,7 +311,7 @@
                 const response = await fetch('dashboard_data.json');
                 if (!response.ok) throw new Error("Failed to load data");
                 const data = await response.json();
-                
+
                 renderDashboard(data);
             } catch (error) {
                 console.error(error);
@@ -325,7 +325,7 @@
 
             // 1. Summary Metrics
             const summary = data.summary;
-            
+
             const cardPL = document.getElementById('card-total-pl');
             cardPL.querySelector('.value').textContent = fmtMoney(summary.total_pl);
             cardPL.className = `card ${summary.total_pl >= 0 ? 'summary-profit' : 'summary-loss'}`;
@@ -338,18 +338,74 @@
             renderPLChart(data.charts.pl_by_security);
             renderCurrencyChart(data.charts.currency_distribution);
 
-            // 3. Table
+            // 3. What If Analysis
+            if (data.what_if) {
+                renderWhatIf(data.what_if);
+            }
+
+            // 4. Table
             allTransactions = data.transactions;
             renderTable(allTransactions);
 
             // Search Listener
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
-                const filtered = allTransactions.filter(row => 
+                const filtered = allTransactions.filter(row =>
                     row['שם ני"ע'] && row['שם ני"ע'].toString().toLowerCase().includes(term)
                 );
                 renderTable(filtered);
             });
+        }
+
+        function renderWhatIf(whatIfData) {
+            // Total Opportunity Cost
+            // Sum of 'total_missed' for ALL opportunities. 
+            // If Positive: We missed out (Price went up).
+            // If Negative: We saved money (Price went down).
+
+            const totalMissed = whatIfData.opportunities.reduce((acc, curr) => acc + curr.total_missed, 0);
+
+            const cardOpp = document.getElementById('card-opportunity');
+            const valEl = cardOpp.querySelector('.value');
+
+            // Note: Data is mixed currency, but displayed as a sum. 
+            // Ideally we should separate currencies, but for now we sum raw values (assuming mostly USD/ILS mix dominant in one direction).
+            // This is a known limitation of the simple "sum" approach.
+            // Let's format it simply.
+
+            if (totalMissed > 0) {
+                valEl.textContent = `-${fmtNum(totalMissed)}`; // Display as Negative (Loss of potential)
+                valEl.style.color = '#ef4444';
+                cardOpp.querySelector('h2').textContent = "רווח פוטנציאלי שהוחמץ";
+            } else {
+                valEl.textContent = `+${fmtNum(Math.abs(totalMissed))}`; // Display as Positive (Saved)
+                valEl.style.color = '#10b981';
+                cardOpp.querySelector('h2').textContent = "הפסד שנמנע (חיסכון)";
+            }
+
+            // Render Tables
+            const renderMiniTable = (id, list) => {
+                const tbody = document.querySelector(`#${id} tbody`);
+                tbody.innerHTML = '';
+                list.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const val = Math.abs(item.total_missed);
+                    // Use currency symbol if possible, or just number
+                    const currencySym = item.currency === 'דולר' ? '$' : '₪';
+
+                    tr.innerHTML = `
+                        <td style="text-align:right; font-size:0.9em;">
+                            <div style="font-weight:bold;">${item.name}</div>
+                            <div style="font-size:0.8em; color:#94a3b8;">${item.date}</div>
+                        </td>
+                        <td style="direction:ltr; font-weight:bold;">${currencySym}${fmtNum(val)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            };
+
+            renderMiniTable('tableRegrets', whatIfData.top_regrets);
+            renderMiniTable('tableSmart', whatIfData.top_smart_moves);
         }
 
         function renderPLChart(items) {
@@ -408,7 +464,7 @@
                 const tr = document.createElement('tr');
                 const pl = parseFloat(row['רווח/הפסד']) || 0;
                 const plClass = pl > 0 ? 'positive' : (pl < 0 ? 'negative' : '');
-                
+
                 tr.innerHTML = `
                     <td>${row['תאריך ביצוע']}</td>
                     <td style="font-weight: 500">${row['שם ני"ע']}</td>

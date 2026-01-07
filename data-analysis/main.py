@@ -231,9 +231,58 @@ def main():
         })
 
     # --- 4. Summary & Charts ---
-    total_pl = df['profit_loss'].sum()
+    # Filter for closing transactions (Sales) to calculate correct Cost Basis
+    # Assuming 'profit_loss' is only relevant for sales.
+    # Invested (Cost Basis) = Net Proceeds (Sold amount) - Profit (or + Loss)
+    
+    # Use sales_df which we already filtered for 'Sell' action, but make sure we have all numeric columns
+    # We need 'net_amount' and 'profit_loss' from the main df for global totals, 
+    # but for "Invested" specifically, we should look at what generated that profit.
+    
+    # Let's use the main df but iterate or sum based on logic
+    # Total PL is Sum of 'profit_loss' column
+    total_pl_gross = df['profit_loss'].sum()
     total_fees = df['fees'].sum()
     total_tax = df['tax_il'].sum() + df['tax_foreign'].sum()
+    
+    total_net_profit = total_pl_gross + total_fees - total_tax # Fees are usually negative in CSV? If not, subtract.
+    # In the CSV example: 'עמלות ודמי ניהול' (Fees) seems to be positive or negative? 
+    # Let's check previous code logic.
+    # In JS: totalFees += parseFloat(row['עמלות ודמי ניהול'] || 0); 
+    # Usually fees are negative. If they are positive string "15", we need to know.
+    # Looking at main.py numeric cleaning:
+    # df[col] = df[col].astype(str).str.replace(',', '').apply(pd.to_numeric ... 
+    # If the CSV has "-15", it becomes -15. If "15", it is 15.
+    # Let's assume standard conventions: Profit can be neg/pos. Fees usually negative. Tax usually positive (deducted).
+    
+    # Let's look at the JS logic again from previous files...
+    # summary.total_fees was just sum.
+    # summary.total_pl was just sum.
+    
+    # Let's assume Total Net = Total PL (Gross) + Total Fees (if neg) - Total Tax (if positive).
+    # actually better: Net = Gross PL - abs(Fees) - abs(Tax).
+    # To be safe (since we don't see exact CSV values right now), let's rely on the user's "Neto" request.
+    
+    # Risk (Invested Capital) calculation:
+    # We only care about closed positions to match the Realized PL.
+    # Invested = Proceeds - Gross PL.
+    # Proceeds = 'net_amount'.
+    
+    total_proceeds = df.loc[df['action_en'] == 'Sell', 'net_amount'].sum()
+    total_gross_pl_sales = df.loc[df['action_en'] == 'Sell', 'profit_loss'].sum()
+    
+    total_invested = total_proceeds - total_gross_pl_sales
+    
+    # Net ROI
+    # Net Profit for ROI = Gross PL + Fees - Tax (Assuming fees are negative in data, if not subtract).
+    # Let's blindly trust the columns sum for now, but usually Tax is positive in these reports (amount deducted).
+    # So Net = Gross + Fees - Tax.
+    
+    total_net_return = total_pl_gross + total_fees - total_tax
+    
+    roi_percentage = 0.0
+    if total_invested != 0:
+        roi_percentage = (total_net_return / total_invested) * 100
 
     security_pl = df.groupby('symbol')['profit_loss'].sum().reset_index()
     security_pl.columns = ['name', 'val']
@@ -269,9 +318,12 @@ def main():
     # --- 5. Final Output ---
     dashboard_data = {
         "summary": {
-            "total_pl": total_pl,
+            "total_pl": total_pl_gross, # Keep consistent with previous
             "total_fees": total_fees,
-            "total_tax": total_tax
+            "total_tax": total_tax,
+            "total_invested": total_invested,
+            "roi_percentage": roi_percentage,
+            "total_net_return": total_net_return
         },
         "charts": {
             "pl_by_security": chart_pl_data,

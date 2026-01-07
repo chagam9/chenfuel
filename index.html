@@ -282,17 +282,24 @@
         <!-- TAB: OVERVIEW -->
         <div id="tab-overview" class="tab-content active">
             <!-- Summary Metrics -->
-            <div class="dashboard-grid">
+            <div class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr);">
                 <div class="card summary-profit" id="card-total-pl">
                     <h2>Total P/L (Net)</h2>
                     <div class="value">₪0</div>
                 </div>
                 <div class="card">
-                    <h2>Total Fees Paid</h2>
+                    <h2>Risk (Invested)</h2>
+                    <div class="value" id="val-invested">₪0</div>
+                    <div style="font-size: 0.8rem; color: var(--accent-blue); margin-top: 0.2rem;">
+                        ROI: <span id="val-roi">0%</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Fees Paid</h2>
                     <div class="value" id="val-fees">₪0</div>
                 </div>
                 <div class="card">
-                    <h2>Total Tax Deducted</h2>
+                    <h2>Tax Deducted</h2>
                     <div class="value" id="val-tax">₪0</div>
                 </div>
             </div>
@@ -481,11 +488,24 @@
             // 1. Summary Metrics
             const summary = data.summary;
             const cardPL = document.getElementById('card-total-pl');
+            // Showing Total Net Return as the main big number? Or just PL Gross?
+            // User asked for "Risk vs Reward (Net)".
+            // Let's keep P/L as the main Gross-ish number but maybe switch to Net Return if preferred.
+            // For now, let's use total_pl (Gross) for the first card as before, 
+            // but the ROI calculation uses the Net.
+
             cardPL.querySelector('.value').textContent = fmtMoney(summary.total_pl);
             cardPL.className = `card ${summary.total_pl >= 0 ? 'summary-profit' : 'summary-loss'}`;
 
             document.getElementById('val-fees').textContent = fmtMoney(summary.total_fees);
             document.getElementById('val-tax').textContent = fmtMoney(summary.total_tax);
+
+            // New Risk/Reward fields
+            document.getElementById('val-invested').textContent = fmtMoney(summary.total_invested);
+            const roiEl = document.getElementById('val-roi');
+            roiEl.textContent = `${summary.roi_percentage.toFixed(2)}%`;
+            roiEl.style.color = summary.roi_percentage >= 0 ? '#10b981' : '#ef4444';
+
             document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('en-US');
 
             // Version

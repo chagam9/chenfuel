@@ -239,6 +239,50 @@
                 </div>
             </div>
 
+            <!-- What If Analysis Section -->
+            <h2 style="margin-top: 3rem; margin-bottom: 1rem; color: #cbd5e1;">ניתוח "מה אם" (בדיעבד)</h2>
+            <div class="dashboard-grid">
+                <div class="card" id="card-opportunity">
+                    <h2>סה"כ רווח שהוחמץ (לו החזקנו)</h2>
+                    <div class="value" dir="ltr">--</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
+                        * חישוב: (מחיר היום - מחיר מכירה) * כמות
+                    </div>
+                </div>
+
+                <!-- Top Regrets -->
+                <div class="card" style="grid-column: span 1;">
+                    <h2 style="color: #ef4444;">פספוסים גדולים (עלו מאז המכירה)</h2>
+                    <div class="table-container" style="max-height: 200px;">
+                        <table id="tableRegrets">
+                            <thead>
+                                <tr>
+                                    <th>נייר</th>
+                                    <th>הפסד תאורטי</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Smart Moves -->
+                <div class="card" style="grid-column: span 1;">
+                    <h2 style="color: #10b981;">מכירות חכמות (ירדו מאז המכירה)</h2>
+                    <div class="table-container" style="max-height: 200px;">
+                        <table id="tableSmart">
+                            <thead>
+                                <tr>
+                                    <th>נייר</th>
+                                    <th>חיסכון תאורטי</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Table -->
             <div class="card">
                 <div class="controls">
@@ -416,6 +460,50 @@
 
             renderMiniTable('tableRegrets', whatIfData.top_regrets);
             renderMiniTable('tableSmart', whatIfData.top_smart_moves);
+        }
+
+        function renderWhatIf(whatIfData) {
+            // Total Opportunity Cost
+            const totalMissed = whatIfData.opportunities.reduce((acc, curr) => acc + curr.total_missed, 0);
+
+            const cardOpp = document.getElementById('card-opportunity');
+            if (cardOpp) {
+                const valEl = cardOpp.querySelector('.value');
+                if (totalMissed > 0) {
+                    valEl.textContent = `-${fmtNum(totalMissed)}`; // Display as Negative (Loss of potential)
+                    valEl.style.color = '#ef4444';
+                    cardOpp.querySelector('h2').textContent = "רווח פוטנציאלי שהוחמץ";
+                } else {
+                    valEl.textContent = `+${fmtNum(Math.abs(totalMissed))}`; // Display as Positive (Saved)
+                    valEl.style.color = '#10b981';
+                    cardOpp.querySelector('h2').textContent = "הפסד שנמנע (חיסכון)";
+                }
+            }
+
+            // Render Tables
+            const renderMiniTable = (id, list) => {
+                const table = document.getElementById(id);
+                if (!table) return;
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = '';
+                list.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const val = Math.abs(item.total_missed);
+                    const currencySym = item.currency === 'דולר' ? '$' : '₪';
+
+                    tr.innerHTML = `
+                        <td style="text-align:right; font-size:0.9em;">
+                            <div style="font-weight:bold;">${item.name}</div>
+                            <div style="font-size:0.8em; color:#94a3b8;">${item.date}</div>
+                        </td>
+                        <td style="direction:ltr; font-weight:bold;">${currencySym}${fmtNum(val)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            };
+
+            if (whatIfData.top_regrets) renderMiniTable('tableRegrets', whatIfData.top_regrets);
+            if (whatIfData.top_smart_moves) renderMiniTable('tableSmart', whatIfData.top_smart_moves);
         }
 
         function renderPLChart(items) {

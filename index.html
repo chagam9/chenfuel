@@ -457,15 +457,15 @@
             const loading = document.getElementById('loading');
             try {
                 loading.innerText = "Status: Starting...";
-                
+
                 loading.innerText = "Status: Fetching Data...";
                 const response = await fetch('dashboard_data.json');
-                
+
                 if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-                
+
                 loading.innerText = "Status: Parsing JSON...";
                 const data = await response.json();
-                
+
                 loading.innerText = "Status: Rendering...";
                 renderDashboard(data);
             } catch (error) {
@@ -646,6 +646,28 @@
                 }
             });
         }
+
+        // Init
+        function initDashboard() {
+            // Prevent multiple inits
+            if (window.dashboardInitialized) return;
+            window.dashboardInitialized = true;
+
+            const loading = document.getElementById('loading');
+            if (loading) loading.innerText = "Status: JS Active, Starting...";
+
+            loadDashboardData();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            initDashboard();
+        }
+
+        // Fallback for extreme cases
+        setTimeout(initDashboard, 1000);
+
     </script>
 </body>
 

@@ -470,19 +470,37 @@
             const tbody = document.querySelector('#transactionsTable tbody');
             tbody.innerHTML = '';
 
+            if (!rows || rows.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="8" style="text-align:center; padding: 2rem; color: #94a3b8;">
+                    לא נמצאו עסקאות תואמות לחיפוש זה.
+                </td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 const pl = parseFloat(row['רווח/הפסד']) || 0;
+
+                // Safe access
+                const name = row['שם ני"ע'] || '-';
+                const action = row['פעולה'] || '-';
+                const qty = row['כמות ביצוע'] != null ? row['כמות ביצוע'] : 0;
+                const rate = row['שער ביצוע'] != null ? row['שער ביצוע'] : 0;
+                const coin = row['מטבע'] || '';
+                const fees = row['עמלות ודמי ניהול'] != null ? row['עמלות ודמי ניהול'] : 0;
+
                 const plClass = pl > 0 ? 'positive' : (pl < 0 ? 'negative' : '');
 
                 tr.innerHTML = `
-                    <td>${row['תאריך ביצוע']}</td>
-                    <td style="font-weight: 500">${row['שם ני"ע']}</td>
-                    <td>${row['פעולה']}</td>
-                    <td>${fmtNum(row['כמות ביצוע'])}</td>
-                    <td>${fmtNum(row['שער ביצוע'])}</td>
-                    <td>${row['מטבע']}</td>
-                    <td class="negative">${fmtNum(row['עמלות ודמי ניהול'])}</td>
+                    <td>${row['תאריך ביצוע'] || ''}</td>
+                    <td style="font-weight: 500">${name}</td>
+                    <td>${action}</td>
+                    <td>${fmtNum(qty)}</td>
+                    <td>${fmtNum(rate)}</td>
+                    <td>${coin}</td>
+                    <td class="negative">${fmtNum(fees)}</td>
                     <td class="${plClass}" style="direction: ltr">${fmtNum(pl)}</td>
                 `;
                 tbody.appendChild(tr);

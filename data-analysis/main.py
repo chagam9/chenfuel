@@ -185,23 +185,64 @@ def main():
     if 'currency' in df.columns:
         df['currency'] = df['currency'].replace({'דולר': 'USD', 'ש"ח': 'ILS'})
 
-    # --- Fetch Rate ---
-    usd_ils_rate = get_usd_ils_rate()
+    # Parse Dates
+    df['date_obj'] = pd.to_datetime(df['date'], dayfirst=True, errors='coerce')
+    
+    # --- Fetch Historical Rates ---
+    # Find range
+    min_date = df['date_obj'].min()
+    max_date = df['date_obj'].max()
+    
+    # Add buffer
+    start_date = (min_date - pd.Timedelta(days=5)).strftime('%Y-%m-%d')
+    end_date = (max_date + pd.Timedelta(days=5)).strftime('%Y-%m-%d')
+    
+    print(f"Fetching USD/ILS history from {start_date} to {end_date}...")
+    
+    try:
+        usd_ils_history = yf.download("USDILS=X", start=start_date, end=end_date, progress=False)['Close']
+        if isinstance(usd_ils_history, pd.DataFrame):
+             usd_ils_history = usd_ils_history.iloc[:, 0] # Take first column if DF
+        
+        # Fill missing dates (weekends) with previous rate
+        full_idx = pd.date_range(start=start_date, end=end_date)
+        usd_ils_history = usd_ils_history.reindex(full_idx).ffill().bfill()
+        
+        # Create lookup dict (date string YYYY-MM-DD -> rate or timestamp -> rate)
+        # We will use .loc with the date object
+    except Exception as e:
+        print(f"Error fetching history: {e}. Using fallback 3.65")
+        usd_ils_history = None
 
     # --- Normalize to ILS ---
+    def get_rate_for_date(date_obj):
+        if pd.isna(date_obj) or usd_ils_history is None:
+            return 3.65 # Fallback
+        try:
+            # We need to access by timestamp or date string
+            # Reindexed series uses Timestamp
+            # Normalize date_obj to midnight
+            ts = pd.Timestamp(date_obj.year, date_obj.month, date_obj.day)
+            if ts in usd_ils_history.index:
+                return float(usd_ils_history.loc[ts])
+            # If not exact match (shouldn't happen with reindex), try fallback
+            return 3.65
+        except:
+            return 3.65
+
     # Create normalized columns
     def normalize(row, col_name):
         val = row[col_name]
         if row['currency'] == 'USD':
-            return val * usd_ils_rate
+            rate = get_rate_for_date(row['date_obj'])
+            return val * rate
         return val
 
     # We need to ensure we don't crash if currency is missing
     df['profit_loss_ils'] = df.apply(lambda row: normalize(row, 'profit_loss'), axis=1)
     df['fees_ils'] = df.apply(lambda row: normalize(row, 'fees'), axis=1)
     # Tax is already split into 'tax_il' (ILS) and 'tax_foreign' (likely ILS converted at source, or USD?)
-    # The header is 'מס חו"ל בשקלים' which means 'Foreign Tax in Shekels'. So it is ALREADY ILS.
-    # 'מס שנוכה/הוחזר בארץ' is also ILS.
+    # header 'מס חו"ל בשקלים' implies ILS.
     df['total_tax_ils'] = df['tax_il'] + df['tax_foreign']
     
     df['net_amount_ils'] = df.apply(lambda row: normalize(row, 'net_amount'), axis=1)
@@ -335,7 +376,7 @@ def main():
             "total_invested": total_invested_ils,
             "roi_percentage": roi_percentage,
             "total_net_return": total_net_return_ils,
-            "exchange_rate": usd_ils_rate
+            "exchange_rate": "Historical (Date Specific)"
         },
         "charts": {
             "pl_by_security": chart_pl_data,

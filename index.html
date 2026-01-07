@@ -454,14 +454,24 @@
         let allTransactions = [];
 
         async function loadDashboardData() {
+            const loading = document.getElementById('loading');
             try {
+                loading.innerText = "Status: Starting...";
+                
+                loading.innerText = "Status: Fetching Data...";
                 const response = await fetch('dashboard_data.json');
-                if (!response.ok) throw new Error("Failed to load data");
+                
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+                
+                loading.innerText = "Status: Parsing JSON...";
                 const data = await response.json();
+                
+                loading.innerText = "Status: Rendering...";
                 renderDashboard(data);
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').innerText = "Error loading data: " + error.message;
+                loading.innerText = "Error: " + error.message + "\n" + (error.stack || '');
+                loading.style.color = '#ef4444';
             }
         }
 

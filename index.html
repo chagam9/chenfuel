@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דשבורד השקעות אישי</title>
+    <title>Investment Dashboard</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -29,17 +29,71 @@
         }
 
         body {
-            font-family: 'Heebo', sans-serif;
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-primary);
             padding: 2rem;
             min-height: 100vh;
         }
 
+        /* Tabs Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: var(--glass-border);
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: 700;
+        }
+
+        /* Content Sections */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         h1 {
             font-weight: 900;
             font-size: 2.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 0;
             background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -64,14 +118,16 @@
         }
 
         .card h2 {
-            font-size: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .card .value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: var(--text-primary);
         }
@@ -93,10 +149,8 @@
         }
 
         @media (max-width: 1024px) {
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
 
+            .charts-container,
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
@@ -112,7 +166,6 @@
         .table-container {
             overflow-x: auto;
             max-height: 600px;
-            /* Scrollable table */
         }
 
         .controls {
@@ -146,7 +199,7 @@
 
         th,
         td {
-            text-align: right;
+            text-align: left;
             padding: 1rem;
             border-bottom: var(--glass-border);
         }
@@ -154,11 +207,17 @@
         th {
             color: var(--text-secondary);
             font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
             background: rgba(15, 23, 42, 0.95);
-            /* Sticky header bg */
             position: sticky;
             top: 0;
             z-index: 10;
+        }
+
+        td {
+            font-variant-numeric: tabular-nums;
         }
 
         tr:hover {
@@ -185,80 +244,123 @@
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         z-index: 9999; transition: opacity 0.5s;
     ">
-        <h2 style="margin-bottom: 2rem; color: #fff;">הכנס קוד גישה</h2>
+        <h2 style="margin-bottom: 2rem; color: #fff;">Enter Access Code</h2>
         <input type="password" id="pinInput" maxlength="4" placeholder="****" style="
             font-size: 2rem; padding: 0.5rem 1rem; text-align: center; border-radius: 12px;
             border: 2px solid rgba(255,255,255,0.2); background: transparent; color: #fff; width: 200px;
         ">
-        <p id="errorMsg" style="color: #ef4444; margin-top: 1rem; opacity: 0; transition: opacity 0.3s;">קוד שגוי</p>
+        <p id="errorMsg" style="color: #ef4444; margin-top: 1rem; opacity: 0; transition: opacity 0.3s;">Incorrect PIN
+        </p>
     </div>
 
     <!-- Main Content Wrapper -->
     <div id="mainContent" style="filter: blur(8px); transition: filter 0.5s;">
+
+        <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1>דשבורד השקעות - אבא</h1>
+            <div>
+                <h1>Investment Dashboard</h1>
+                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                    Dad's Portfolio Analysis
+                </div>
+            </div>
             <div id="versionDisplay" style="color: rgba(255,255,255,0.3); font-family: monospace; font-size: 0.9rem;">
                 v<span id="verNum">--</span>
             </div>
         </div>
 
-        <div id="loading" style="text-align:center; color: var(--text-secondary);">טוען נתונים...</div>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('overview')">Overview</button>
+            <button class="nav-tab" onclick="switchTab('transactions')">Transactions</button>
+            <button class="nav-tab" onclick="switchTab('whatif')">What If Analysis</button>
+        </div>
 
-        <div id="dashboardContent" style="display:none;">
+        <div id="loading" style="text-align:center; color: var(--text-secondary); margin-top: 4rem;">Loading Data...
+        </div>
+
+        <!-- TAB: OVERVIEW -->
+        <div id="tab-overview" class="tab-content active">
             <!-- Summary Metrics -->
             <div class="dashboard-grid">
                 <div class="card summary-profit" id="card-total-pl">
-                    <h2>סה"כ רווח/הפסד (מנוכה)</h2>
+                    <h2>Total P/L (Net)</h2>
                     <div class="value">₪0</div>
                 </div>
                 <div class="card">
-                    <h2>סה"כ עמלות ששולמו</h2>
+                    <h2>Total Fees Paid</h2>
                     <div class="value" id="val-fees">₪0</div>
                 </div>
                 <div class="card">
-                    <h2>סה"כ מס שנוכה (בארץ ובחו"ל)</h2>
+                    <h2>Total Tax Deducted</h2>
                     <div class="value" id="val-tax">₪0</div>
                 </div>
             </div>
 
             <!-- Charts -->
             <div class="charts-container">
-                <!-- Top 10 P/L -->
                 <div class="card">
-                    <h2>10 הניירות הכי משמעותיים (רווח/הפסד)</h2>
+                    <h2>Top Performers (P/L Impact)</h2>
                     <div class="chart-wrapper">
                         <canvas id="plChart"></canvas>
                     </div>
                 </div>
-                <!-- Currency Pie -->
                 <div class="card">
-                    <h2>התפלגות מטבע (מס' עסקאות)</h2>
+                    <h2>Currency Exposure (Transaction Count)</h2>
                     <div class="chart-wrapper">
                         <canvas id="currencyChart"></canvas>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- What If Analysis Section -->
-            <h2 style="margin-top: 3rem; margin-bottom: 1rem; color: #cbd5e1;">ניתוח "מה אם" (בדיעבד)</h2>
+        <!-- TAB: TRANSACTIONS -->
+        <div id="tab-transactions" class="tab-content">
+            <div class="card">
+                <div class="controls">
+                    <h2>Transaction History</h2>
+                    <input type="text" id="searchInput" placeholder="Search by symbol...">
+                </div>
+                <div class="table-container">
+                    <table id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Symbol</th>
+                                <th>Action</th>
+                                <th style="text-align: right;">Qty</th>
+                                <th style="text-align: right;">Price</th>
+                                <th>Currency</th>
+                                <th style="text-align: right;">Fees</th>
+                                <th style="text-align: right;">P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: WHAT IF -->
+        <div id="tab-whatif" class="tab-content">
             <div class="dashboard-grid">
                 <div class="card" id="card-opportunity">
-                    <h2>סה"כ רווח שהוחמץ (לו החזקנו)</h2>
-                    <div class="value" dir="ltr">--</div>
+                    <h2>Missed Opportunity (If Held)</h2>
+                    <div class="value">--</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
-                        * חישוב: (מחיר היום - מחיר מכירה) * כמות
+                        * Calculation: (Current Price - Sale Price) × Quantity
                     </div>
                 </div>
 
                 <!-- Top Regrets -->
                 <div class="card" style="grid-column: span 1;">
-                    <h2 style="color: #ef4444;">פספוסים גדולים (עלו מאז המכירה)</h2>
-                    <div class="table-container" style="max-height: 200px;">
+                    <h2 style="color: #ef4444;">Missed Gains (Price went UP)</h2>
+                    <div class="table-container" style="max-height: 250px;">
                         <table id="tableRegrets">
                             <thead>
                                 <tr>
-                                    <th>נייר</th>
-                                    <th>הפסד תאורטי</th>
+                                    <th>Symbol</th>
+                                    <th style="text-align: right;">Missed</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -268,13 +370,13 @@
 
                 <!-- Smart Moves -->
                 <div class="card" style="grid-column: span 1;">
-                    <h2 style="color: #10b981;">מכירות חכמות (ירדו מאז המכירה)</h2>
-                    <div class="table-container" style="max-height: 200px;">
+                    <h2 style="color: #10b981;">Smart Sells (Price went DOWN)</h2>
+                    <div class="table-container" style="max-height: 250px;">
                         <table id="tableSmart">
                             <thead>
                                 <tr>
-                                    <th>נייר</th>
-                                    <th>חיסכון תאורטי</th>
+                                    <th>Symbol</th>
+                                    <th style="text-align: right;">Saved</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -283,75 +385,71 @@
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="card">
+            <div class="card" style="margin-top: 1.5rem;">
                 <div class="controls">
-                    <h2>פירוט עסקאות</h2>
-                    <input type="text" id="searchInput" placeholder="חפש לפי שם נייר ערך...">
+                    <h2>Opportunity Details</h2>
                 </div>
-                <div class="table-container">
-                    <table id="transactionsTable">
+                <div class="table-container" style="max-height: 600px;">
+                    <table id="tableOpportunities">
                         <thead>
                             <tr>
-                                <th>תאריך</th>
-                                <th>שם ני"ע</th>
-                                <th>פעולה</th>
-                                <th>כמות</th>
-                                <th>שער</th>
-                                <th>מטבע</th>
-                                <th>עמלה</th>
-                                <th>רווח/הפסד</th>
+                                <th>Date</th>
+                                <th>Symbol</th>
+                                <th style="text-align:right;">Sold @</th>
+                                <th style="text-align:right;">Current</th>
+                                <th style="text-align:right;">Diff/Share</th>
+                                <th style="text-align:right;">Total Missed</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- JS Injected -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.8rem;">
-                עודכן לאחרונה: <span id="lastUpdated"></span> | מבוסס על Python Analysis
-            </div>
+        </div>
+
+        <div
+            style="text-align: center; margin-top: 3rem; color: var(--text-secondary); font-size: 0.8rem; border-top: var(--glass-border); padding-top: 1rem;">
+            Last Updated: <span id="lastUpdated"></span> | Powered by Python Analysis
         </div>
     </div>
 
     <script>
+        // --- Navigation Logic ---
+        function switchTab(tabName) {
+            // Update Buttons
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            // Find button that calls this tab (hacky but works for simple case)
+            const btns = document.querySelectorAll('.nav-tab');
+            if (tabName === 'overview') btns[0].classList.add('active');
+            if (tabName === 'transactions') btns[1].classList.add('active');
+            if (tabName === 'whatif') btns[2].classList.add('active');
+
+            // Update Content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
         // --- Lock Screen Logic ---
         const PIN = '1234';
         const pinInput = document.getElementById('pinInput');
-
-        // Focus once loaded
         window.setTimeout(() => pinInput.focus(), 100);
 
         pinInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val.length === 4) {
-                if (val === PIN) {
-                    unlockDashboard();
-                } else {
-                    showError();
-                    e.target.value = '';
-                }
+            if (e.target.value === PIN) {
+                document.getElementById('lockScreen').style.opacity = '0';
+                document.getElementById('mainContent').style.filter = 'none';
+                setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
+            } else if (e.target.value.length === 4) {
+                const err = document.getElementById('errorMsg');
+                err.style.opacity = '1';
+                setTimeout(() => err.style.opacity = '0', 2000);
+                e.target.value = '';
             }
         });
 
-        function unlockDashboard() {
-            document.getElementById('lockScreen').style.opacity = '0';
-            document.getElementById('mainContent').style.filter = 'none';
-            setTimeout(() => {
-                document.getElementById('lockScreen').style.display = 'none';
-            }, 500);
-        }
-
-        function showError() {
-            const err = document.getElementById('errorMsg');
-            err.style.opacity = '1';
-            setTimeout(() => err.style.opacity = '0', 2000);
-        }
-
         // --- Data Logic ---
-        const fmtMoney = (num) => new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(num);
-        const fmtNum = (num) => new Intl.NumberFormat('he-IL').format(num);
+        const fmtMoney = (num, currency = 'ILS') => new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(num);
+        const fmtNum = (num) => new Intl.NumberFormat('en-US').format(num);
 
         let allTransactions = [];
 
@@ -360,162 +458,147 @@
                 const response = await fetch('dashboard_data.json');
                 if (!response.ok) throw new Error("Failed to load data");
                 const data = await response.json();
-
                 renderDashboard(data);
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').innerText = "שגיאה בטעינת נתונים: " + error.message;
+                document.getElementById('loading').innerText = "Error loading data: " + error.message;
             }
         }
 
         function renderDashboard(data) {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('dashboardContent').style.display = 'block';
 
             // 1. Summary Metrics
             const summary = data.summary;
-
             const cardPL = document.getElementById('card-total-pl');
             cardPL.querySelector('.value').textContent = fmtMoney(summary.total_pl);
             cardPL.className = `card ${summary.total_pl >= 0 ? 'summary-profit' : 'summary-loss'}`;
 
             document.getElementById('val-fees').textContent = fmtMoney(summary.total_fees);
             document.getElementById('val-tax').textContent = fmtMoney(summary.total_tax);
-            document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('he-IL');
+            document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('en-US');
 
             // Version
             if (data.metadata.version) {
                 document.getElementById('verNum').textContent = data.metadata.version;
             }
 
-            // 2. Charts
+            // 2. Overview Charts
             renderPLChart(data.charts.pl_by_security);
             renderCurrencyChart(data.charts.currency_distribution);
 
-            // 3. What If Analysis
-            if (data.what_if) {
-                renderWhatIf(data.what_if);
-            }
-
-            // 4. Table
+            // 3. Transactions Table
             allTransactions = data.transactions;
             renderTable(allTransactions);
-
-            // Search Listener
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 const filtered = allTransactions.filter(row =>
-                    row['שם ני"ע'] && row['שם ני"ע'].toString().toLowerCase().includes(term)
+                    row.symbol && row.symbol.toString().toLowerCase().includes(term)
                 );
                 renderTable(filtered);
+            });
+
+            // 4. What If Analysis
+            if (data.what_if) {
+                renderWhatIf(data.what_if);
+            }
+        }
+
+        function renderTable(rows) {
+            const tbody = document.querySelector('#transactionsTable tbody');
+            tbody.innerHTML = '';
+
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 2rem; color: #94a3b8;">No transactions found.</td></tr>`;
+                return;
+            }
+
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                const pl = parseFloat(row.profit_loss) || 0;
+                const plClass = pl > 0 ? 'positive' : (pl < 0 ? 'negative' : '');
+
+                tr.innerHTML = `
+                    <td>${row.date || ''}</td>
+                    <td style="font-weight: 500">${row.symbol || '-'}</td>
+                    <td>${row.action || '-'}</td>
+                    <td style="text-align: right;">${fmtNum(row.quantity)}</td>
+                    <td style="text-align: right;">${fmtNum(row.price)}</td>
+                    <td>${row.currency || ''}</td>
+                    <td class="negative" style="text-align: right;">${fmtNum(row.fees)}</td>
+                    <td class="${plClass}" style="text-align: right;">${fmtNum(pl)}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
         function renderWhatIf(whatIfData) {
             // Total Opportunity Cost
-            // Sum of 'total_missed' for ALL opportunities. 
-            // If Positive: We missed out (Price went up).
-            // If Negative: We saved money (Price went down).
-
             const totalMissed = whatIfData.opportunities.reduce((acc, curr) => acc + curr.total_missed, 0);
-
             const cardOpp = document.getElementById('card-opportunity');
             const valEl = cardOpp.querySelector('.value');
 
-            // Note: Data is mixed currency, but displayed as a sum. 
-            // Ideally we should separate currencies, but for now we sum raw values (assuming mostly USD/ILS mix dominant in one direction).
-            // This is a known limitation of the simple "sum" approach.
-            // Let's format it simply.
-
             if (totalMissed > 0) {
-                valEl.textContent = `-${fmtNum(totalMissed)}`; // Display as Negative (Loss of potential)
+                valEl.textContent = `-${fmtMoney(totalMissed, 'USD').replace('$', '')}`; // Check currency later
+                valEl.textContent = `-${fmtNum(totalMissed)}`;
                 valEl.style.color = '#ef4444';
-                cardOpp.querySelector('h2').textContent = "רווח פוטנציאלי שהוחמץ";
+                cardOpp.querySelector('h2').textContent = "Missed Potential Profit";
             } else {
-                valEl.textContent = `+${fmtNum(Math.abs(totalMissed))}`; // Display as Positive (Saved)
+                valEl.textContent = `+${fmtNum(Math.abs(totalMissed))}`;
                 valEl.style.color = '#10b981';
-                cardOpp.querySelector('h2').textContent = "הפסד שנמנע (חיסכון)";
+                cardOpp.querySelector('h2').textContent = "Loss Avoided (Saved)";
             }
 
-            // Render Tables
-            const renderMiniTable = (id, list) => {
+            // Tables
+            const renderMini = (id, list) => {
                 const tbody = document.querySelector(`#${id} tbody`);
                 tbody.innerHTML = '';
                 list.forEach(item => {
                     const tr = document.createElement('tr');
                     const val = Math.abs(item.total_missed);
-                    // Use currency symbol if possible, or just number
-                    const currencySym = item.currency === 'דולר' ? '$' : '₪';
-
+                    const sym = item.currency === 'USD' ? '$' : (item.currency === 'ILS' ? '₪' : '');
                     tr.innerHTML = `
-                        <td style="text-align:right; font-size:0.9em;">
+                        <td>
                             <div style="font-weight:bold;">${item.name}</div>
                             <div style="font-size:0.8em; color:#94a3b8;">${item.date}</div>
                         </td>
-                        <td style="direction:ltr; font-weight:bold;">${currencySym}${fmtNum(val)}</td>
+                        <td style="text-align:right; font-weight:bold;">${sym}${fmtNum(val)}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             };
 
-            renderMiniTable('tableRegrets', whatIfData.top_regrets);
-            renderMiniTable('tableSmart', whatIfData.top_smart_moves);
-        }
+            renderMini('tableRegrets', whatIfData.top_regrets);
+            renderMini('tableSmart', whatIfData.top_smart_moves);
 
-        function renderWhatIf(whatIfData) {
-            // Total Opportunity Cost
-            const totalMissed = whatIfData.opportunities.reduce((acc, curr) => acc + curr.total_missed, 0);
-
-            const cardOpp = document.getElementById('card-opportunity');
-            if (cardOpp) {
-                const valEl = cardOpp.querySelector('.value');
-                if (totalMissed > 0) {
-                    valEl.textContent = `-${fmtNum(totalMissed)}`; // Display as Negative (Loss of potential)
-                    valEl.style.color = '#ef4444';
-                    cardOpp.querySelector('h2').textContent = "רווח פוטנציאלי שהוחמץ";
-                } else {
-                    valEl.textContent = `+${fmtNum(Math.abs(totalMissed))}`; // Display as Positive (Saved)
-                    valEl.style.color = '#10b981';
-                    cardOpp.querySelector('h2').textContent = "הפסד שנמנע (חיסכון)";
-                }
-            }
-
-            // Render Tables
-            const renderMiniTable = (id, list) => {
-                const table = document.getElementById(id);
-                if (!table) return;
-                const tbody = table.querySelector('tbody');
-                tbody.innerHTML = '';
-                list.forEach(item => {
-                    const tr = document.createElement('tr');
-                    const val = Math.abs(item.total_missed);
-                    const currencySym = item.currency === 'דולר' ? '$' : '₪';
-
-                    tr.innerHTML = `
-                        <td style="text-align:right; font-size:0.9em;">
-                            <div style="font-weight:bold;">${item.name}</div>
-                            <div style="font-size:0.8em; color:#94a3b8;">${item.date}</div>
-                        </td>
-                        <td style="direction:ltr; font-weight:bold;">${currencySym}${fmtNum(val)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            };
-
-            if (whatIfData.top_regrets) renderMiniTable('tableRegrets', whatIfData.top_regrets);
-            if (whatIfData.top_smart_moves) renderMiniTable('tableSmart', whatIfData.top_smart_moves);
+            // Full Opp Table
+            const tbodyOpp = document.querySelector('#tableOpportunities tbody');
+            tbodyOpp.innerHTML = '';
+            whatIfData.opportunities.forEach(item => {
+                const tr = document.createElement('tr');
+                const val = item.total_missed;
+                const plClass = val < 0 ? 'positive' : 'negative'; // Negative missed is good (saved)
+                tr.innerHTML = `
+                     <td>${item.date}</td>
+                     <td>${item.name}</td>
+                     <td style="text-align:right;">${fmtNum(item.sale_price)}</td>
+                     <td style="text-align:right;">${fmtNum(item.current_price)}</td>
+                     <td style="text-align:right;">${fmtNum(item.diff_per_unit)}</td>
+                     <td class="${plClass}" style="text-align:right;">${fmtNum(val)}</td>
+                `;
+                tbodyOpp.appendChild(tr);
+            });
         }
 
         function renderPLChart(items) {
             const ctx = document.getElementById('plChart').getContext('2d');
             const colors = items.map(d => d.val >= 0 ? '#10b981' : '#ef4444');
-
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: items.map(d => d.name),
                     datasets: [{
-                        label: 'רווח/הפסד (₪)',
+                        label: 'P/L',
                         data: items.map(d => d.val),
                         backgroundColor: colors,
                         borderRadius: 6
@@ -553,51 +636,6 @@
                 }
             });
         }
-
-        function renderTable(rows) {
-            const tbody = document.querySelector('#transactionsTable tbody');
-            tbody.innerHTML = '';
-
-            if (!rows || rows.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="8" style="text-align:center; padding: 2rem; color: #94a3b8;">
-                    לא נמצאו עסקאות תואמות לחיפוש זה.
-                </td>`;
-                tbody.appendChild(tr);
-                return;
-            }
-
-            rows.forEach(row => {
-                const tr = document.createElement('tr');
-                const pl = parseFloat(row['רווח/הפסד']) || 0;
-
-                // Safe access
-                const name = row['שם ני"ע'] || '-';
-                const action = row['פעולה'] || '-';
-                const qty = row['כמות ביצוע'] != null ? row['כמות ביצוע'] : 0;
-                const rate = row['שער ביצוע'] != null ? row['שער ביצוע'] : 0;
-                const coin = row['מטבע'] || '';
-                const fees = row['עמלות ודמי ניהול'] != null ? row['עמלות ודמי ניהול'] : 0;
-
-                const plClass = pl > 0 ? 'positive' : (pl < 0 ? 'negative' : '');
-
-                tr.innerHTML = `
-                    <td>${row['תאריך ביצוע'] || ''}</td>
-                    <td style="font-weight: 500">${name}</td>
-                    <td>${action}</td>
-                    <td>${fmtNum(qty)}</td>
-                    <td>${fmtNum(rate)}</td>
-                    <td>${coin}</td>
-                    <td class="negative">${fmtNum(fees)}</td>
-                    <td class="${plClass}" style="direction: ltr">${fmtNum(pl)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // Init
-        window.onload = loadDashboardData;
-
     </script>
 </body>
 

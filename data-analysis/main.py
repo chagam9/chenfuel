@@ -3,6 +3,7 @@ import json
 import os
 import yfinance as yf
 import time
+import math
 
 # --- Configuration & Mappings ---
 # Mapping Hebrew/Text names from CSV to Yahoo Finance Tickers
@@ -63,9 +64,6 @@ NAME_TO_TICKER = {
     "PONY AI INC": "PONY",
     "OSCAR HEALTH -A": "OSCR",
     "CHEGG INC": "CHGG",
-    "A/S PUR US CANN": "YOLO", # Assuming this is the Cannabis ETF or similar, checking name might be needed.
-    # Note: "A/S PUR US CANN" is likely "AdvisorShares Pure US Cannabis ETF" -> MSOS? or YOLO? Using MSOS usually. 
-    # Let's try "MSOS" as it's the common one, if not sure we can skip.
     "A/S PUR US CANN": "MSOS", 
     "ABRDN PALLADIUM": "PALL",
     "ABRDN PLATINUM E": "PPLT",
@@ -75,9 +73,6 @@ NAME_TO_TICKER = {
     "ARCHER-DANIELS": "ADM",
 
     # Israeli Stocks (TASE)
-    # Note: Values in CSV are in ILS, so we compare with ILS price from Yahoo (which is usually in Agorot or Shekels depending on API)
-    # Yahoo usually returns TASE prices in Agorot (1/100 ILS) for stocks! We must check this.
-    # Actually, yfinance for TASE often returns in Agorot. We need to be careful.
     "פועלים": "POLI.TA",
     "לאומי": "LUMI.TA",
     "דיסקונט       א": "DSCT.TA",
@@ -86,18 +81,34 @@ NAME_TO_TICKER = {
     "טבע": "TEVA.TA",
     "אלביט מערכות": "ESLT.TA",
     "טאואר": "TSEM.TA",
-    "איי.סי.אל": "ICL.TA", # ICL Group
+    "איי.סי.אל": "ICL.TA",
     "פורמולה מערכות": "FORTY.TA",
     "נובה": "NVMI.TA",
     "קמטק": "CAMT.TA",
     "נאייקס": "NYAX.TA",
     "פוקס": "FOX.TA",
     "דיסקונט השקעות": "DISI.TA",
-    
-    # ETFs (KSM/Tachlit/Harel) often don't have good Yahoo Tickers or valid data.
-    # We will likely skip them for the "What If" analysis unless we find them.
-    # Leaving them out for now to ensure script stability.
 }
+
+# Translate Columns
+COL_MAP = {
+    'תאריך ביצוע': 'date',
+    'שם ני"ע': 'symbol',
+    'פעולה': 'action',
+    'כמות ביצוע': 'quantity',
+    'שער ביצוע': 'price',
+    'מטבע': 'currency',
+    'עמלות ודמי ניהול': 'fees',
+    'רווח/הפסד': 'profit_loss',
+    'מס שנוכה/הוחזר בארץ': 'tax_il',
+    'מס חו"ל בשקלים': 'tax_foreign',
+    'תמורה נטו לפני מס': 'net_amount'
+}
+
+def clean_money(val):
+    if isinstance(val, str):
+        return float(val.replace(',', ''))
+    return float(val)
 
 def get_current_prices(tickers):
     if not tickers:
@@ -105,19 +116,12 @@ def get_current_prices(tickers):
     
     print(f"Fetching prices for {len(tickers)} tickers...")
     try:
-        # Fetch in batches if needed, but yfinance handles lists well
         data = yf.download(tickers, period="1d", progress=False)['Close']
-        
-        # If only one ticker, data is Series, else DataFrame
         current_prices = {}
         if isinstance(data, pd.Series):
-            # Single ticker result
-            # Depending on yfinance version, 'Close' might be the series directly
             val = data.iloc[-1]
             current_prices[tickers[0]] = float(val)
         elif isinstance(data, pd.DataFrame):
-            # Multi ticker
-            # Get latest row
             latest = data.iloc[-1]
             for ticker in tickers:
                 try:
@@ -132,7 +136,7 @@ def get_current_prices(tickers):
         return {}
 
 def main():
-    print("Starting Chenfuel Portfolio Opportunity Analysis...")
+    print("Starting Chenfuel Portfolio Opportunity Analysis [English]...")
     
     csv_path = "data.csv"
     output_dir = "/app/web"
@@ -148,35 +152,42 @@ def main():
         print(f"Error reading CSV: {e}")
         return
 
-    # Cleanup Cols
-    numeric_cols = ['רווח/הפסד', 'עמלות ודמי ניהול', 'מס שנוכה/הוחזר בארץ', 'מס חו"ל בשקלים', 'כמות ביצוע', 'שער ביצוע', 'תמורה נטו לפני מס']
-    for col in numeric_cols:
+    # Clean numeric columns
+    numeric_hebrew_cols = ['רווח/הפסד', 'עמלות ודמי ניהול', 'מס שנוכה/הוחזר בארץ', 'מס חו"ל בשקלים', 'כמות ביצוע', 'שער ביצוע', 'תמורה נטו לפני מס']
+    for col in numeric_hebrew_cols:
          if col in df.columns:
             df[col] = df[col].astype(str).str.replace(',', '').apply(pd.to_numeric, errors='coerce').fillna(0)
     
     df['שם ני"ע'] = df['שם ני"ע'].fillna('Unknown')
     df['מטבע'] = df['מטבע'].fillna('Unknown')
 
-    # --- 1. Identify Sold Positions & Tickers ---
-    # We want to analyze "Opportunity Cost" for Sales.
-    # Logic: Look at "Mecira" (Sale) rows.
+    # Rename Columns to English for ease of use in Frontend
+    df.rename(columns=COL_MAP, inplace=True)
     
-    sales_df = df[df['פעולה'].str.contains('מכירה', na=False)].copy()
+    # Standardize Currency
+    # 'דולר' -> 'USD', 'ש"ח' -> 'ILS'
+    if 'currency' in df.columns:
+        df['currency'] = df['currency'].replace({'דולר': 'USD', 'ש"ח': 'ILS'})
+
+    # --- 1. Identify Sold Positions & Tickers ---
+    # Action 'מכירה' -> 'Sell' ? Or keep original text?
+    # Better to normalize action too.
+    # Hebrew 'קניה' -> 'Buy', 'מכירה' -> 'Sell'
+    if 'action' in df.columns:
+        df['action_en'] = df['action'].replace({'קניה': 'Buy', 'מכירה': 'Sell'})
+    
+    sales_df = df[df['action'].str.contains('מכירה', na=False)].copy()
     
     # Map to tickers
-    unique_names = sales_df['שם ני"ע'].unique()
+    unique_names = sales_df['symbol'].unique()
     relevant_tickers = []
     name_to_ticker_map = {}
     
     for name in unique_names:
-        # Simple exact match from our dict
         if name in NAME_TO_TICKER:
             ticker = NAME_TO_TICKER[name]
             relevant_tickers.append(ticker)
             name_to_ticker_map[name] = ticker
-        else:
-            # Try fuzzy or clean? For now, skip unknown
-            pass
 
     # --- 2. Fetch Prices ---
     current_prices = get_current_prices(list(set(relevant_tickers)))
@@ -185,47 +196,29 @@ def main():
     opportunity_list = []
     
     for idx, row in sales_df.iterrows():
-        name = row['שם ני"ע']
+        name = row['symbol']
         if name not in name_to_ticker_map:
             continue
             
         ticker = name_to_ticker_map[name]
-        if ticker not in current_prices:
+        try:
+            current_price = current_prices.get(ticker)
+        except:
             continue
             
-        current_price = current_prices[ticker]
+        if current_price is None:
+            continue
         
-        # TASE Correction: Israeli stocks on Yahoo are often in Agorot (1/100 ILS)
-        # However, our CSV 'Price' ('שער ביצוע') for ILS stocks is usually in Agorot too! 
-        # (e.g., Bank Leumi ~3000 now, which is 30.00 ILS).
-        # So usually direct comparison is fine IF both are Agorot.
-        # But for US stocks, CSV is in USD, Yahoo is in USD. 
-        # We need to verify unit consistency.
-        
-        # Assumption: 
-        # If Currency == 'ש"ח' -> CSV Price is usually Agorot (e.g. 2500 for 25 ILS). Yahoo TASE is Agorot. -> Match.
-        # If Currency == 'דולר' -> CSV Price is USD. Yahoo is USD. -> Match.
-        
-        sale_price = row['שער ביצוע'] # Price per unit at sale
-        qty_sold = abs(row['כמות ביצוע']) # Quantity (sales are negative in some systems, positive in others, here 'מכירה' usually has neg quantity in Excel logic or pos? check csv)
-        # Checking CSV: "מכירה, -2320.0" -> Quantity is negative.
-        qty_sold = abs(qty_sold)
-        
-        # Diff per unit = Current - Sale
-        # If Current > Sale -> I lost profit -> Opportunity Cost Positive (Bad)
-        # If Current < Sale -> I saved loss -> Opportunity Cost Negative (Good)
+        sale_price = row['price']
+        qty_sold = abs(row['quantity'])
         
         diff_per_unit = current_price - sale_price
         total_missed = diff_per_unit * qty_sold
         
-        # Currency adjustment for 'Total Missed' to be displayed in main currency?
-        # For now, we will store it in the original currency and simple 'value'.
-        # Or better: Normalize to simple text for display like "500 USD" or "2000 ILS"
-        
-        currency = row['מטבע']
+        currency = row['currency']
         
         opportunity_list.append({
-            "date": row['תאריך ביצוע'],
+            "date": row['date'],
             "name": name,
             "ticker": ticker,
             "qty": qty_sold,
@@ -234,22 +227,44 @@ def main():
             "diff_per_unit": diff_per_unit,
             "total_missed": total_missed,
             "currency": currency,
-            "is_success": (total_missed < 0) # If missed < 0, it means Current < Sale => Good decision
+            "is_success": (total_missed < 0) 
         })
 
-    # --- 4. Original Dashboard Logic (Summary & Charts) ---
-    total_pl = df['רווח/הפסד'].sum()
-    total_fees = df['עמלות ודמי ניהול'].sum()
-    total_tax = df['מס שנוכה/הוחזר בארץ'].sum() + df['מס חו"ל בשקלים'].sum()
+    # --- 4. Summary & Charts ---
+    total_pl = df['profit_loss'].sum()
+    total_fees = df['fees'].sum()
+    total_tax = df['tax_il'].sum() + df['tax_foreign'].sum()
 
-    security_pl = df.groupby('שם ני"ע')['רווח/הפסד'].sum().reset_index()
+    security_pl = df.groupby('symbol')['profit_loss'].sum().reset_index()
     security_pl.columns = ['name', 'val']
     security_pl = security_pl.sort_values('val', ascending=False)
     chart_pl_data = pd.concat([security_pl.head(5), security_pl.tail(5)]).drop_duplicates().to_dict(orient='records')
 
-    currency_counts = df['מטבע'].value_counts().reset_index()
+    currency_counts = df['currency'].value_counts().reset_index()
     currency_counts.columns = ['currency', 'count']
     chart_currency_data = {"labels": currency_counts['currency'].tolist(), "data": currency_counts['count'].tolist()}
+
+    # --- Versioning ---
+    version_file = "/app/version.txt"
+    current_version = 0.00
+    
+    if os.path.exists(version_file):
+        try:
+            with open(version_file, "r") as f:
+                content = f.read().strip()
+                if content:
+                    current_version = float(content)
+        except:
+            pass
+
+    new_version = round(current_version + 0.01, 2)
+    
+    try:
+        with open(version_file, "w") as f:
+            f.write(f"{new_version:.2f}")
+        print(f"Version updated to: {new_version}")
+    except Exception as e:
+        print(f"Warning: Could not save version file: {e}")
 
     # --- 5. Final Output ---
     dashboard_data = {
@@ -263,56 +278,23 @@ def main():
             "currency_distribution": chart_currency_data
         },
         "what_if": {
-             # Return valid analysis rows mostly
              "opportunities": opportunity_list,
-             # Maybe top missed opportunities?
              "top_regrets": sorted([x for x in opportunity_list if not x['is_success']], key=lambda x: x['total_missed'], reverse=True)[:5],
-             "top_smart_moves": sorted([x for x in opportunity_list if x['is_success']], key=lambda x: x['total_missed'])[:5] # most negative first
+             "top_smart_moves": sorted([x for x in opportunity_list if x['is_success']], key=lambda x: x['total_missed'])[:5]
         },
         "transactions": df.to_dict(orient='records'),
         "metadata": {
             "row_count": len(df),
-            "generated_at": pd.Timestamp.now().isoformat()
+            "generated_at": pd.Timestamp.now().isoformat(),
+            "version": f"{new_version:.2f}"
         }
     }
 
     print(f"\n--- Opportunity Analysis ---")
     print(f"Analyzed {len(opportunity_list)} sales events.")
-    
-    # --- Versioning ---
-    version_file = "/app/version.txt" # We will mount this
-    current_version = 0.00
-    
-    # Read existing version
-    if os.path.exists(version_file):
-        try:
-            with open(version_file, "r") as f:
-                content = f.read().strip()
-                if content:
-                    current_version = float(content)
-        except Exception as e:
-            print(f"Warning: Could not read version file: {e}")
-
-    # Increment
-    new_version = round(current_version + 0.01, 2)
-    
-    # Save new version
-    try:
-        with open(version_file, "w") as f:
-            f.write(f"{new_version:.2f}")
-        print(f"Version updated to: {new_version}")
-    except Exception as e:
-        print(f"Warning: Could not save version file: {e}")
-        # If we can't save, we usually assume we are in a read-only container or something, 
-        # but for this setup we expect volume mount.
-
-    # Update Metadata
-    dashboard_data['metadata']['version'] = f"{new_version:.2f}"
-    
     print(f"Saving dashboard data to {output_file}...")
     
     # Robust NaN Sanitization
-    import math
     def sanitize(obj):
         if isinstance(obj, float):
             if math.isnan(obj) or math.isinf(obj):

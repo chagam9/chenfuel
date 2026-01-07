@@ -9,8 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PapaParse -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <style>
         :root {
@@ -90,13 +88,16 @@
         .charts-container {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            /* Bar chart wide, Pie chart narrow */
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         @media (max-width: 1024px) {
             .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -110,6 +111,8 @@
         /* --- Table Section --- */
         .table-container {
             overflow-x: auto;
+            max-height: 600px;
+            /* Scrollable table */
         }
 
         .controls {
@@ -151,9 +154,11 @@
         th {
             color: var(--text-secondary);
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(15, 23, 42, 0.95);
+            /* Sticky header bg */
             position: sticky;
             top: 0;
+            z-index: 10;
         }
 
         tr:hover {
@@ -192,65 +197,71 @@
     <div id="mainContent" style="filter: blur(8px); transition: filter 0.5s;">
         <h1>דשבורד השקעות - אבא</h1>
 
-        <!-- Summary Metrics -->
-        <div class="dashboard-grid">
-            <div class="card summary-profit" id="card-total-pl">
-                <h2>סה"כ רווח/הפסד (מנוכה)</h2>
-                <div class="value">₪0</div>
-            </div>
-            <div class="card">
-                <h2>סה"כ עמלות ששולמו</h2>
-                <div class="value" id="val-fees">₪0</div>
-            </div>
-            <div class="card">
-                <h2>סה"כ מס שנוכה (בארץ ובחו"ל)</h2>
-                <div class="value" id="val-tax">₪0</div>
-            </div>
-        </div>
+        <div id="loading" style="text-align:center; color: var(--text-secondary);">טוען נתונים...</div>
 
-        <!-- Charts -->
-        <div class="charts-container">
-            <!-- Top 10 P/L -->
-            <div class="card">
-                <h2>10 הניירות הכי משמעותיים (רווח/הפסד)</h2>
-                <div class="chart-wrapper">
-                    <canvas id="plChart"></canvas>
+        <div id="dashboardContent" style="display:none;">
+            <!-- Summary Metrics -->
+            <div class="dashboard-grid">
+                <div class="card summary-profit" id="card-total-pl">
+                    <h2>סה"כ רווח/הפסד (מנוכה)</h2>
+                    <div class="value">₪0</div>
+                </div>
+                <div class="card">
+                    <h2>סה"כ עמלות ששולמו</h2>
+                    <div class="value" id="val-fees">₪0</div>
+                </div>
+                <div class="card">
+                    <h2>סה"כ מס שנוכה (בארץ ובחו"ל)</h2>
+                    <div class="value" id="val-tax">₪0</div>
                 </div>
             </div>
-            <!-- Currency Pie -->
-            <div class="card">
-                <h2>התפלגות מטבע (מס' עסקאות)</h2>
-                <div class="chart-wrapper">
-                    <canvas id="currencyChart"></canvas>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <!-- Top 10 P/L -->
+                <div class="card">
+                    <h2>10 הניירות הכי משמעותיים (רווח/הפסד)</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="plChart"></canvas>
+                    </div>
+                </div>
+                <!-- Currency Pie -->
+                <div class="card">
+                    <h2>התפלגות מטבע (מס' עסקאות)</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="currencyChart"></canvas>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Table -->
-        <div class="card">
-            <div class="controls">
-                <h2>פירוט עסקאות</h2>
-                <input type="text" id="searchInput" placeholder="חפש לפי שם נייר ערך...">
+            <!-- Table -->
+            <div class="card">
+                <div class="controls">
+                    <h2>פירוט עסקאות</h2>
+                    <input type="text" id="searchInput" placeholder="חפש לפי שם נייר ערך...">
+                </div>
+                <div class="table-container">
+                    <table id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>תאריך</th>
+                                <th>שם ני"ע</th>
+                                <th>פעולה</th>
+                                <th>כמות</th>
+                                <th>שער</th>
+                                <th>מטבע</th>
+                                <th>עמלה</th>
+                                <th>רווח/הפסד</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- JS Injected -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="table-container">
-                <table id="transactionsTable">
-                    <thead>
-                        <tr>
-                            <th>תאריך</th>
-                            <th>שם ני"ע</th>
-                            <th>פעולה</th>
-                            <th>כמות</th>
-                            <th>שער</th>
-                            <th>מטבע</th>
-                            <th>עמלה</th>
-                            <th>רווח/הפסד</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- JS Injected -->
-                    </tbody>
-                    <!-- TFoot will be injected by JS -->
-                </table>
+            <div style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.8rem;">
+                עודכן לאחרונה: <span id="lastUpdated"></span> | מבוסס על Python Analysis
             </div>
         </div>
     </div>
@@ -289,183 +300,101 @@
             setTimeout(() => err.style.opacity = '0', 2000);
         }
 
-        // Global State
-        let rawData = [];
-        let plChartInstance = null;
-        let currencyChartInstance = null;
-
-        // Formatting Helpers
+        // --- Data Logic ---
         const fmtMoney = (num) => new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(num);
         const fmtNum = (num) => new Intl.NumberFormat('he-IL').format(num);
+        
+        let allTransactions = [];
 
-        // --- Main Init ---
-        window.onload = function () {
-            Papa.parse('data.csv', {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function (results) {
-                    processData(results.data);
-                },
-                error: function (err) {
-                    console.error("Error loading CSV:", err);
-                    alert("שגיאה בטעינת הנתונים: " + err.message);
-                }
-            });
-
-            // Search Filter Listener
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = rawData.filter(row => row['שם ני"ע'] && row['שם ני"ע'].toString().toLowerCase().includes(term));
-                renderTable(filtered);
-            });
-        };
-
-        function processData(data) {
-            // Filter out empty rows or rows without security name just in case
-            rawData = data.filter(r => r['שם ני"ע']);
-
-            // 1. Calculate Summary Metrics
-            let totalPL = 0;
-            let totalFees = 0;
-            let totalTax = 0;
-
-            // Aggregation for Charts
-            const securityPL = {}; // { "Apple": 500, "Tesla": -200 }
-            const currencyCounts = {}; // { "USD": 50, "ILS": 20 }
-
-            // Helper to parse numbers with commas (e.g., "1,200.50")
-            const parseNum = (str) => {
-                if (!str) return 0;
-                return parseFloat(str.toString().replace(/,/g, '')) || 0;
-            };
-
-            rawData.forEach(row => {
-                // Parse numbers (remove commas)
-                const pl = parseNum(row['רווח/הפסד']);
-                const fees = parseNum(row['עמלות ודמי ניהול']);
-                const taxIL = parseNum(row['מס שנוכה/הוחזר בארץ']);
-                const taxForeign = parseNum(row['מס חו"ל בשקלים']);
-                const currency = row['מטבע'] || 'Unknown';
-                const name = row['שם ני"ע'];
-
-                totalPL += pl;
-                totalFees += fees; // fees are usually negative in data, we sum them as is
-                totalTax += (taxIL + taxForeign);
-
-                // For Chart 1: Group P/L by Security
-                if (!securityPL[name]) securityPL[name] = 0;
-                securityPL[name] += pl;
-
-                // For Chart 2: Count Currencies
-                if (!currencyCounts[currency]) currencyCounts[currency] = 0;
-                currencyCounts[currency] += 1; // Count transaction volume, or use value? Request said "Distribution by currency"
-            });
-
-            // Update DOM Summary
-            const cardPL = document.getElementById('card-total-pl');
-            cardPL.querySelector('.value').textContent = fmtMoney(totalPL);
-            if (totalPL >= 0) {
-                cardPL.classList.add('summary-profit');
-                cardPL.classList.remove('summary-loss');
-            } else {
-                cardPL.classList.add('summary-loss');
-                cardPL.classList.remove('summary-profit');
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('dashboard_data.json');
+                if (!response.ok) throw new Error("Failed to load data");
+                const data = await response.json();
+                
+                renderDashboard(data);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loading').innerText = "שגיאה בטעינת נתונים: " + error.message;
             }
-
-            document.getElementById('val-fees').textContent = fmtMoney(totalFees); // Likely negative
-            document.getElementById('val-tax').textContent = fmtMoney(totalTax);
-
-            // 2. Render Charts
-            renderPLChart(securityPL);
-            renderCurrencyChart(currencyCounts);
-
-            // 3. Render Table
-            renderTable(rawData);
         }
 
-        function renderPLChart(dataMap) {
-            // Sort by absolute P/L magnitude to find most significant, OR just top winners/losers
-            // Requirement: "10 Best vs 10 Worst". Let's show top 5 winners and top 5 losers combined, or just top 10 absolute.
-            // Let's sort by value and take top 5 and bottom 5.
+        function renderDashboard(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
 
-            const entries = Object.entries(dataMap).map(([name, val]) => ({ name, val }));
-            entries.sort((a, b) => b.val - a.val); // Descending
+            // 1. Summary Metrics
+            const summary = data.summary;
+            
+            const cardPL = document.getElementById('card-total-pl');
+            cardPL.querySelector('.value').textContent = fmtMoney(summary.total_pl);
+            cardPL.className = `card ${summary.total_pl >= 0 ? 'summary-profit' : 'summary-loss'}`;
 
-            const top5 = entries.slice(0, 5);
-            const bottom5 = entries.slice(-5).reverse(); // Worst 5
+            document.getElementById('val-fees').textContent = fmtMoney(summary.total_fees);
+            document.getElementById('val-tax').textContent = fmtMoney(summary.total_tax);
+            document.getElementById('lastUpdated').textContent = new Date(data.metadata.generated_at).toLocaleString('he-IL');
 
-            // Combine for display: Top 5 then Bottom 5
-            const chartData = [...top5, ...bottom5];
+            // 2. Charts
+            renderPLChart(data.charts.pl_by_security);
+            renderCurrencyChart(data.charts.currency_distribution);
 
-            // Colors
-            const colors = chartData.map(d => d.val >= 0 ? '#10b981' : '#ef4444');
+            // 3. Table
+            allTransactions = data.transactions;
+            renderTable(allTransactions);
 
+            // Search Listener
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allTransactions.filter(row => 
+                    row['שם ני"ע'] && row['שם ני"ע'].toString().toLowerCase().includes(term)
+                );
+                renderTable(filtered);
+            });
+        }
+
+        function renderPLChart(items) {
             const ctx = document.getElementById('plChart').getContext('2d');
-
-            // Gradient
-            const gradientGreen = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientGreen.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
-            gradientGreen.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
+            const colors = items.map(d => d.val >= 0 ? '#10b981' : '#ef4444');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: chartData.map(d => d.name),
+                    labels: items.map(d => d.name),
                     datasets: [{
                         label: 'רווח/הפסד (₪)',
-                        data: chartData.map(d => d.val),
+                        data: items.map(d => d.val),
                         backgroundColor: colors,
-                        borderRadius: 6,
-                        borderWidth: 0
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: (ctx) => fmtMoney(ctx.raw)
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: {
-                            ticks: { color: '#94a3b8', font: { size: 11 } },
-                            grid: { display: false }
-                        },
-                        y: {
-                            ticks: { color: '#94a3b8' },
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                        }
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
                     }
                 }
             });
         }
 
-        function renderCurrencyChart(dataMap) {
-            const labels = Object.keys(dataMap);
-            const data = Object.values(dataMap);
-
+        function renderCurrencyChart(dataObj) {
             const ctx = document.getElementById('currencyChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: labels,
+                    labels: dataObj.labels,
                     datasets: [{
-                        data: data,
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'],
+                        data: dataObj.data,
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#10b981'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right', labels: { color: '#cbd5e1' } }
-                    },
+                    plugins: { legend: { position: 'right', labels: { color: '#cbd5e1' } } },
                     cutout: '60%'
                 }
             });
@@ -473,68 +402,31 @@
 
         function renderTable(rows) {
             const tbody = document.querySelector('#transactionsTable tbody');
-            const tfoot = document.querySelector('#transactionsTable tfoot');
-
-            // Generate TFoot if missing
-            if (!tfoot) {
-                const footer = document.createElement('tfoot');
-                footer.id = 'tableSummary';
-                footer.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                footer.style.fontWeight = 'bold';
-                footer.style.color = '#fbbf24'; // Amber for visibility
-                document.getElementById('transactionsTable').appendChild(footer);
-            }
-
             tbody.innerHTML = '';
-
-            let sumQuantity = 0;
-            let sumFees = 0;
-            let sumPL = 0;
 
             rows.forEach(row => {
                 const tr = document.createElement('tr');
-
-                // Parse values for row display and summary
-                const pl = parseNum(row['רווח/הפסד']);
-                const fees = parseNum(row['עמלות ודמי ניהול']);
-                const qty = parseNum(row['כמות ביצוע']);
-
-                sumPL += pl;
-                sumFees += fees;
-                sumQuantity += qty;
-
+                const pl = parseFloat(row['רווח/הפסד']) || 0;
                 const plClass = pl > 0 ? 'positive' : (pl < 0 ? 'negative' : '');
-
+                
                 tr.innerHTML = `
                     <td>${row['תאריך ביצוע']}</td>
                     <td style="font-weight: 500">${row['שם ני"ע']}</td>
                     <td>${row['פעולה']}</td>
-                    <td>${fmtNum(qty)}</td>
-                    <td>${fmtNum(parseNum(row['שער ביצוע']))}</td>
+                    <td>${fmtNum(row['כמות ביצוע'])}</td>
+                    <td>${fmtNum(row['שער ביצוע'])}</td>
                     <td>${row['מטבע']}</td>
-                    <td class="negative">${fmtNum(fees)}</td>
+                    <td class="negative">${fmtNum(row['עמלות ודמי ניהול'])}</td>
                     <td class="${plClass}" style="direction: ltr">${fmtNum(pl)}</td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            // Render Footer Summary
-            const tfootEl = document.getElementById('tableSummary');
-            const footerPLClass = sumPL >= 0 ? 'positive' : 'negative';
-
-            tfootEl.innerHTML = `
-                <tr>
-                    <td colspan="3">סיכום לתוצאות המוצגות (${rows.length} שורות):</td>
-                    <td>${fmtNum(sumQuantity)}</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="negative">${fmtNum(sumFees)}</td>
-                    <td class="${footerPLClass}" style="direction: ltr; font-size: 1.1em;">${fmtMoney(sumPL)}</td>
-                </tr>
-            `;
         }
-    </script>
 
+        // Init
+        window.onload = loadDashboardData;
+
+    </script>
 </body>
 
 </html>

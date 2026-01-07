@@ -3,8 +3,8 @@
         "total_pl": 584342.7914268447,
         "total_fees": -74279.85065091848,
         "total_tax": 105489.66999999998,
-        "total_invested": 20643475.60146337,
-        "roi_percentage": 1.9598118000403328,
+        "total_invested": 976739.2154464506,
+        "roi_percentage": 41.42080755823884,
         "total_net_return": 404573.2707759262,
         "exchange_rate": "Historical (Date Specific)"
     },
@@ -62,7 +62,605 @@
                 172,
                 2
             ]
-        }
+        },
+        "exposure_history": [
+            {
+                "date": "2024-12-04",
+                "val": 130578.54314088821
+            },
+            {
+                "date": "2024-12-05",
+                "val": -16426.456859111786
+            },
+            {
+                "date": "2024-12-06",
+                "val": 139792.30314088822
+            },
+            {
+                "date": "2024-12-09",
+                "val": -694808.8909505272
+            },
+            {
+                "date": "2024-12-10",
+                "val": -419820.55095052713
+            },
+            {
+                "date": "2024-12-11",
+                "val": 135361.03904947283
+            },
+            {
+                "date": "2024-12-12",
+                "val": 135361.03904947283
+            },
+            {
+                "date": "2024-12-16",
+                "val": 282196.03904947283
+            },
+            {
+                "date": "2024-12-17",
+                "val": -217350.1109505272
+            },
+            {
+                "date": "2024-12-18",
+                "val": -33386.79539280891
+            },
+            {
+                "date": "2024-12-19",
+                "val": -281649.7853928089
+            },
+            {
+                "date": "2024-12-25",
+                "val": -930057.765392809
+            },
+            {
+                "date": "2024-12-27",
+                "val": -880733.765392809
+            },
+            {
+                "date": "2024-12-31",
+                "val": -935307.765392809
+            },
+            {
+                "date": "2025-01-02",
+                "val": -420210.92791417125
+            },
+            {
+                "date": "2025-01-03",
+                "val": -370105.92791417125
+            },
+            {
+                "date": "2025-01-09",
+                "val": -320866.92791417125
+            },
+            {
+                "date": "2025-01-10",
+                "val": -370971.92791417125
+            },
+            {
+                "date": "2025-01-14",
+                "val": -390732.92791417125
+            },
+            {
+                "date": "2025-01-16",
+                "val": -390732.92791417125
+            },
+            {
+                "date": "2025-01-17",
+                "val": -342048.92791417125
+            },
+            {
+                "date": "2025-01-27",
+                "val": -292229.92791417125
+            },
+            {
+                "date": "2025-01-28",
+                "val": -289750.92791417125
+            },
+            {
+                "date": "2025-02-03",
+                "val": -338434.92791417125
+            },
+            {
+                "date": "2025-02-04",
+                "val": -432746.04791417124
+            },
+            {
+                "date": "2025-02-05",
+                "val": -234290.04791417124
+            },
+            {
+                "date": "2025-02-06",
+                "val": -183779.04791417124
+            },
+            {
+                "date": "2025-02-19",
+                "val": -207668.25791417123
+            },
+            {
+                "date": "2025-02-20",
+                "val": -158819.25791417123
+            },
+            {
+                "date": "2025-03-03",
+                "val": 100153.22946013449
+            },
+            {
+                "date": "2025-03-04",
+                "val": 100153.22946013449
+            },
+            {
+                "date": "2025-03-05",
+                "val": 231095.2259415531
+            },
+            {
+                "date": "2025-03-06",
+                "val": -210641.20166598322
+            },
+            {
+                "date": "2025-03-07",
+                "val": -181612.20166598322
+            },
+            {
+                "date": "2025-03-11",
+                "val": -211231.20166598322
+            },
+            {
+                "date": "2025-03-12",
+                "val": -358376.2016659832
+            },
+            {
+                "date": "2025-03-13",
+                "val": -408816.2016659832
+            },
+            {
+                "date": "2025-03-17",
+                "val": -165689.27608096122
+            },
+            {
+                "date": "2025-03-19",
+                "val": -66395.27608096122
+            },
+            {
+                "date": "2025-03-20",
+                "val": 97291.02838528634
+            },
+            {
+                "date": "2025-03-21",
+                "val": 196752.02838528634
+            },
+            {
+                "date": "2025-03-25",
+                "val": 313739.90251052857
+            },
+            {
+                "date": "2025-04-02",
+                "val": 313739.90251052857
+            },
+            {
+                "date": "2025-04-07",
+                "val": 313739.90251052857
+            },
+            {
+                "date": "2025-04-08",
+                "val": 264210.90251052857
+            },
+            {
+                "date": "2025-04-10",
+                "val": 220297.90251052857
+            },
+            {
+                "date": "2025-04-15",
+                "val": 164916.65251052857
+            },
+            {
+                "date": "2025-04-21",
+                "val": 139224.65251052857
+            },
+            {
+                "date": "2025-04-23",
+                "val": 249751.34251052857
+            },
+            {
+                "date": "2025-04-24",
+                "val": -163540.01959554193
+            },
+            {
+                "date": "2025-04-25",
+                "val": -163540.01959554193
+            },
+            {
+                "date": "2025-04-28",
+                "val": -492669.0277766251
+            },
+            {
+                "date": "2025-04-30",
+                "val": -518077.7077766251
+            },
+            {
+                "date": "2025-05-13",
+                "val": -316033.9577766251
+            },
+            {
+                "date": "2025-05-16",
+                "val": -215168.95777662512
+            },
+            {
+                "date": "2025-05-21",
+                "val": 73065.50112019305
+            },
+            {
+                "date": "2025-05-22",
+                "val": 271928.50112019305
+            },
+            {
+                "date": "2025-05-29",
+                "val": 605366.1778141094
+            },
+            {
+                "date": "2025-06-05",
+                "val": 555420.1778141094
+            },
+            {
+                "date": "2025-06-10",
+                "val": 545953.8696924282
+            },
+            {
+                "date": "2025-06-12",
+                "val": 909004.7361317707
+            },
+            {
+                "date": "2025-06-13",
+                "val": 808932.5961317706
+            },
+            {
+                "date": "2025-06-16",
+                "val": 659817.5761317706
+            },
+            {
+                "date": "2025-06-17",
+                "val": 807038.5761317706
+            },
+            {
+                "date": "2025-06-20",
+                "val": 278525.5502432608
+            },
+            {
+                "date": "2025-06-24",
+                "val": 514689.4098271155
+            },
+            {
+                "date": "2025-06-26",
+                "val": 467343.75982711546
+            },
+            {
+                "date": "2025-06-27",
+                "val": 517643.75982711546
+            },
+            {
+                "date": "2025-06-30",
+                "val": 279032.8685984396
+            },
+            {
+                "date": "2025-07-01",
+                "val": 218157.3944251322
+            },
+            {
+                "date": "2025-07-02",
+                "val": 64173.2444251322
+            },
+            {
+                "date": "2025-07-04",
+                "val": 13531.244425132201
+            },
+            {
+                "date": "2025-07-07",
+                "val": 229968.33121569388
+            },
+            {
+                "date": "2025-07-08",
+                "val": 331481.06952307455
+            },
+            {
+                "date": "2025-07-09",
+                "val": 834696.7802345537
+            },
+            {
+                "date": "2025-07-11",
+                "val": 865047.7802345537
+            },
+            {
+                "date": "2025-07-14",
+                "val": 976739.2154464506
+            },
+            {
+                "date": "2025-07-15",
+                "val": 976739.2154464506
+            },
+            {
+                "date": "2025-07-16",
+                "val": 748972.1478566908
+            },
+            {
+                "date": "2025-07-17",
+                "val": 662532.3022799277
+            },
+            {
+                "date": "2025-07-21",
+                "val": 820242.5985731243
+            },
+            {
+                "date": "2025-07-22",
+                "val": 758564.6026271819
+            },
+            {
+                "date": "2025-07-23",
+                "val": 98823.10670375812
+            },
+            {
+                "date": "2025-07-25",
+                "val": 319960.4587430953
+            },
+            {
+                "date": "2025-07-28",
+                "val": 94580.029457569
+            },
+            {
+                "date": "2025-07-29",
+                "val": -102349.07297697078
+            },
+            {
+                "date": "2025-07-30",
+                "val": -32553.591524715535
+            },
+            {
+                "date": "2025-08-01",
+                "val": -163757.26680040848
+            },
+            {
+                "date": "2025-08-04",
+                "val": -314289.555039971
+            },
+            {
+                "date": "2025-08-05",
+                "val": -372854.82503997104
+            },
+            {
+                "date": "2025-08-06",
+                "val": 63876.91893471463
+            },
+            {
+                "date": "2025-08-07",
+                "val": 110631.09946597798
+            },
+            {
+                "date": "2025-08-08",
+                "val": 158262.67174731952
+            },
+            {
+                "date": "2025-08-11",
+                "val": -122538.95749891538
+            },
+            {
+                "date": "2025-08-12",
+                "val": 316761.8237100766
+            },
+            {
+                "date": "2025-08-13",
+                "val": -242408.31516480946
+            },
+            {
+                "date": "2025-08-14",
+                "val": -262010.6044714501
+            },
+            {
+                "date": "2025-08-15",
+                "val": -653291.0269931462
+            },
+            {
+                "date": "2025-08-18",
+                "val": -291549.076176038
+            },
+            {
+                "date": "2025-08-19",
+                "val": -146964.6085001137
+            },
+            {
+                "date": "2025-08-20",
+                "val": -236119.5550070717
+            },
+            {
+                "date": "2025-08-21",
+                "val": 59839.28633704642
+            },
+            {
+                "date": "2025-08-22",
+                "val": -360798.9824559166
+            },
+            {
+                "date": "2025-08-25",
+                "val": 166850.1557398365
+            },
+            {
+                "date": "2025-08-26",
+                "val": 246771.34020458203
+            },
+            {
+                "date": "2025-08-27",
+                "val": 2591.4291141269787
+            },
+            {
+                "date": "2025-08-28",
+                "val": -485147.17092442536
+            },
+            {
+                "date": "2025-08-29",
+                "val": -794904.6418611624
+            },
+            {
+                "date": "2025-09-02",
+                "val": -159105.54457112332
+            },
+            {
+                "date": "2025-09-04",
+                "val": -161587.22322433966
+            },
+            {
+                "date": "2025-09-05",
+                "val": -375137.3667402317
+            },
+            {
+                "date": "2025-09-08",
+                "val": -231757.54234505194
+            },
+            {
+                "date": "2025-09-09",
+                "val": 357369.49400710565
+            },
+            {
+                "date": "2025-09-10",
+                "val": 574585.1835546445
+            },
+            {
+                "date": "2025-09-11",
+                "val": 623140.0390176724
+            },
+            {
+                "date": "2025-09-15",
+                "val": 360092.0164151524
+            },
+            {
+                "date": "2025-09-16",
+                "val": 729404.2796006536
+            },
+            {
+                "date": "2025-09-17",
+                "val": -334287.67876353743
+            },
+            {
+                "date": "2025-09-18",
+                "val": -281948.67876353743
+            },
+            {
+                "date": "2025-09-19",
+                "val": -263859.67876353743
+            },
+            {
+                "date": "2025-09-22",
+                "val": 11485.316947550746
+            },
+            {
+                "date": "2025-09-23",
+                "val": 197993.28780755517
+            },
+            {
+                "date": "2025-09-24",
+                "val": 261887.8631269121
+            },
+            {
+                "date": "2025-09-29",
+                "val": 370650.85337818624
+            },
+            {
+                "date": "2025-09-30",
+                "val": 581848.5041431284
+            },
+            {
+                "date": "2025-10-01",
+                "val": 581848.5041431284
+            },
+            {
+                "date": "2025-10-02",
+                "val": 581848.5041431284
+            },
+            {
+                "date": "2025-10-03",
+                "val": 406450.7639180517
+            },
+            {
+                "date": "2025-10-07",
+                "val": 496023.2523858404
+            },
+            {
+                "date": "2025-10-08",
+                "val": 374080.027121768
+            },
+            {
+                "date": "2025-10-09",
+                "val": 434848.43238213536
+            },
+            {
+                "date": "2025-10-10",
+                "val": 616314.6424651432
+            },
+            {
+                "date": "2025-10-15",
+                "val": 551340.4152312565
+            },
+            {
+                "date": "2025-10-16",
+                "val": 651216.1878487968
+            },
+            {
+                "date": "2025-10-17",
+                "val": 616384.7278487969
+            },
+            {
+                "date": "2025-10-20",
+                "val": 550565.4810350228
+            },
+            {
+                "date": "2025-10-21",
+                "val": 661242.0043624282
+            },
+            {
+                "date": "2025-10-22",
+                "val": 748012.8063341022
+            },
+            {
+                "date": "2025-10-23",
+                "val": 668611.9934378505
+            },
+            {
+                "date": "2025-10-28",
+                "val": 290403.1072351647
+            },
+            {
+                "date": "2025-11-05",
+                "val": 556490.2332160186
+            },
+            {
+                "date": "2025-11-06",
+                "val": 506287.23321601865
+            },
+            {
+                "date": "2025-11-07",
+                "val": 467818.41305083985
+            },
+            {
+                "date": "2025-11-11",
+                "val": 434709.41305083985
+            },
+            {
+                "date": "2025-11-13",
+                "val": 413319.6963211989
+            },
+            {
+                "date": "2025-11-20",
+                "val": 536110.5484959579
+            },
+            {
+                "date": "2025-12-11",
+                "val": 536110.5484959579
+            },
+            {
+                "date": "2025-12-12",
+                "val": 519484.54849595786
+            },
+            {
+                "date": "2025-12-18",
+                "val": 500398.54849595786
+            }
+        ]
     },
     "what_if": {
         "opportunities": [
@@ -72,9 +670,9 @@
                 "ticker": "POLI.TA",
                 "qty": 2320.0,
                 "sale_price": 4328.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3260.0,
-                "total_missed": 7563200.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3240.0,
+                "total_missed": 7516800.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -84,9 +682,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 2174.0,
                 "sale_price": 2439.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 1140.0,
-                "total_missed": 2478360.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 1139.0,
+                "total_missed": 2476186.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -96,9 +694,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 89.5,
                 "sale_price": 9982.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6348.0,
-                "total_missed": 568146.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6368.0,
+                "total_missed": 569936.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -108,9 +706,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 42.0,
                 "sale_price": 9981.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6349.0,
-                "total_missed": 266658.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6369.0,
+                "total_missed": 267498.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -120,9 +718,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 53.0,
                 "sale_price": 9980.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6350.0,
-                "total_missed": 336550.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6370.0,
+                "total_missed": 337610.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -132,9 +730,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 152.0,
                 "sale_price": 9978.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6352.0,
-                "total_missed": 965504.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6372.0,
+                "total_missed": 968544.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -144,9 +742,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 28.0,
                 "sale_price": 9976.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6354.0,
-                "total_missed": 177912.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6374.0,
+                "total_missed": 178472.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -156,9 +754,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 24.0,
                 "sale_price": 9966.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6364.0,
-                "total_missed": 152736.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6384.0,
+                "total_missed": 153216.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -168,9 +766,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 37.0,
                 "sale_price": 9958.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6372.0,
-                "total_missed": 235764.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6392.0,
+                "total_missed": 236504.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -180,9 +778,9 @@
                 "ticker": "NYAX.TA",
                 "qty": 211.0,
                 "sale_price": 9930.0,
-                "current_price": 16330.0,
-                "diff_per_unit": 6400.0,
-                "total_missed": 1350400.0,
+                "current_price": 16350.0,
+                "diff_per_unit": 6420.0,
+                "total_missed": 1354620.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -192,9 +790,9 @@
                 "ticker": "POLI.TA",
                 "qty": 6576.0,
                 "sale_price": 4365.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3223.0,
-                "total_missed": 21194448.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3203.0,
+                "total_missed": 21062928.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -204,9 +802,9 @@
                 "ticker": "FIBI.TA",
                 "qty": 183.0,
                 "sale_price": 17790.0,
-                "current_price": 26220.0,
-                "diff_per_unit": 8430.0,
-                "total_missed": 1542690.0,
+                "current_price": 26160.0,
+                "diff_per_unit": 8370.0,
+                "total_missed": 1531710.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -216,9 +814,9 @@
                 "ticker": "FIBI.TA",
                 "qty": 105.0,
                 "sale_price": 17950.0,
-                "current_price": 26220.0,
-                "diff_per_unit": 8270.0,
-                "total_missed": 868350.0,
+                "current_price": 26160.0,
+                "diff_per_unit": 8210.0,
+                "total_missed": 862050.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -228,9 +826,9 @@
                 "ticker": "FOX.TA",
                 "qty": 2.0,
                 "sale_price": 29220.0,
-                "current_price": 33270.0,
-                "diff_per_unit": 4050.0,
-                "total_missed": 8100.0,
+                "current_price": 33800.0,
+                "diff_per_unit": 4580.0,
+                "total_missed": 9160.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -240,9 +838,9 @@
                 "ticker": "FOX.TA",
                 "qty": 41.0,
                 "sale_price": 29210.0,
-                "current_price": 33270.0,
-                "diff_per_unit": 4060.0,
-                "total_missed": 166460.0,
+                "current_price": 33800.0,
+                "diff_per_unit": 4590.0,
+                "total_missed": 188190.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -252,9 +850,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 805.0,
                 "sale_price": 7330.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 3130.0,
-                "total_missed": 2519650.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 3090.0,
+                "total_missed": 2487450.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -264,9 +862,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 6077.0,
                 "sale_price": 2490.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 1089.0,
-                "total_missed": 6617853.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 1088.0,
+                "total_missed": 6611776.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -276,9 +874,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 1169.0,
                 "sale_price": 4299.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 3125.0,
-                "total_missed": 3653125.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 3124.0,
+                "total_missed": 3651956.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -288,9 +886,9 @@
                 "ticker": "POLI.TA",
                 "qty": 1160.0,
                 "sale_price": 4310.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3278.0,
-                "total_missed": 3802480.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3258.0,
+                "total_missed": 3779280.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -300,9 +898,9 @@
                 "ticker": "POLI.TA",
                 "qty": 1297.0,
                 "sale_price": 4314.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3274.0,
-                "total_missed": 4246378.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3254.0,
+                "total_missed": 4220438.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -312,9 +910,9 @@
                 "ticker": "ESLT.TA",
                 "qty": 52.0,
                 "sale_price": 101980.0,
-                "current_price": 202480.0,
-                "diff_per_unit": 100500.0,
-                "total_missed": 5226000.0,
+                "current_price": 204200.0,
+                "diff_per_unit": 102220.0,
+                "total_missed": 5315440.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -324,9 +922,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 1124.0,
                 "sale_price": 4500.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 2924.0,
-                "total_missed": 3286576.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 2923.0,
+                "total_missed": 3285452.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -360,9 +958,9 @@
                 "ticker": "ESLT.TA",
                 "qty": 46.0,
                 "sale_price": 108590.0,
-                "current_price": 202480.0,
-                "diff_per_unit": 93890.0,
-                "total_missed": 4318940.0,
+                "current_price": 204200.0,
+                "diff_per_unit": 95610.0,
+                "total_missed": 4398060.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -372,9 +970,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 1692.0,
                 "sale_price": 2591.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 988.0,
-                "total_missed": 1671696.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 987.0,
+                "total_missed": 1670004.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -384,9 +982,9 @@
                 "ticker": "POLI.TA",
                 "qty": 1088.0,
                 "sale_price": 4553.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3035.0,
-                "total_missed": 3302080.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3015.0,
+                "total_missed": 3280320.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -408,9 +1006,9 @@
                 "ticker": "ESLT.TA",
                 "qty": 50.0,
                 "sale_price": 105000.0,
-                "current_price": 202480.0,
-                "diff_per_unit": 97480.0,
-                "total_missed": 4874000.0,
+                "current_price": 204200.0,
+                "diff_per_unit": 99200.0,
+                "total_missed": 4960000.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -420,9 +1018,9 @@
                 "ticker": "ESLT.TA",
                 "qty": 42.0,
                 "sale_price": 124790.0,
-                "current_price": 202480.0,
-                "diff_per_unit": 77690.0,
-                "total_missed": 3262980.0,
+                "current_price": 204200.0,
+                "diff_per_unit": 79410.0,
+                "total_missed": 3335220.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -432,9 +1030,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 800.0,
                 "sale_price": 2803.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 776.0,
-                "total_missed": 620800.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 775.0,
+                "total_missed": 620000.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -444,9 +1042,9 @@
                 "ticker": "POLI.TA",
                 "qty": 850.0,
                 "sale_price": 4918.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 2670.0,
-                "total_missed": 2269500.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 2650.0,
+                "total_missed": 2252500.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -456,9 +1054,9 @@
                 "ticker": "POLI.TA",
                 "qty": 1072.0,
                 "sale_price": 5169.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 2419.0,
-                "total_missed": 2593168.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 2399.0,
+                "total_missed": 2571728.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -468,9 +1066,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 873.0,
                 "sale_price": 2715.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 864.0,
-                "total_missed": 754272.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 863.0,
+                "total_missed": 753399.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -480,9 +1078,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 1579.0,
                 "sale_price": 5145.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 2279.0,
-                "total_missed": 3598541.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 2278.0,
+                "total_missed": 3596962.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -492,9 +1090,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 119.0,
                 "sale_price": 5095.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 2329.0,
-                "total_missed": 277151.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 2328.0,
+                "total_missed": 277032.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -504,9 +1102,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 853.0,
                 "sale_price": 5094.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 2330.0,
-                "total_missed": 1987490.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 2329.0,
+                "total_missed": 1986637.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -516,9 +1114,9 @@
                 "ticker": "POLI.TA",
                 "qty": 1775.0,
                 "sale_price": 5703.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1885.0,
-                "total_missed": 3345875.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1865.0,
+                "total_missed": 3310375.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -528,9 +1126,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 2753.0,
                 "sale_price": 5475.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 1949.0,
-                "total_missed": 5365597.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 1948.0,
+                "total_missed": 5362844.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -540,9 +1138,9 @@
                 "ticker": "POLI.TA",
                 "qty": 89.0,
                 "sale_price": 5626.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1962.0,
-                "total_missed": 174618.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1942.0,
+                "total_missed": 172838.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -552,9 +1150,9 @@
                 "ticker": "POLI.TA",
                 "qty": 676.0,
                 "sale_price": 5625.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1963.0,
-                "total_missed": 1326988.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1943.0,
+                "total_missed": 1313468.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -564,9 +1162,9 @@
                 "ticker": "POLI.TA",
                 "qty": 97.0,
                 "sale_price": 5622.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1966.0,
-                "total_missed": 190702.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1946.0,
+                "total_missed": 188762.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -576,9 +1174,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 289.0,
                 "sale_price": 6323.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 1101.0,
-                "total_missed": 318189.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 1100.0,
+                "total_missed": 317900.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -588,9 +1186,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 547.0,
                 "sale_price": 3300.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 279.0,
-                "total_missed": 152613.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 278.0,
+                "total_missed": 152066.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -600,9 +1198,9 @@
                 "ticker": "POLI.TA",
                 "qty": 192.0,
                 "sale_price": 6368.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1220.0,
-                "total_missed": 234240.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1200.0,
+                "total_missed": 230400.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -612,9 +1210,9 @@
                 "ticker": "POLI.TA",
                 "qty": 90.0,
                 "sale_price": 6367.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1221.0,
-                "total_missed": 109890.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1201.0,
+                "total_missed": 108090.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -624,9 +1222,9 @@
                 "ticker": "DISI.TA",
                 "qty": 491.0,
                 "sale_price": 731.6,
-                "current_price": 1058.0,
-                "diff_per_unit": 326.4,
-                "total_missed": 160262.4,
+                "current_price": 1057.0,
+                "diff_per_unit": 325.4,
+                "total_missed": 159771.4,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -636,9 +1234,9 @@
                 "ticker": "DISI.TA",
                 "qty": 1954.0,
                 "sale_price": 731.5,
-                "current_price": 1058.0,
-                "diff_per_unit": 326.5,
-                "total_missed": 637981.0,
+                "current_price": 1057.0,
+                "diff_per_unit": 325.5,
+                "total_missed": 636027.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -648,9 +1246,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 150.0,
                 "sale_price": 5370.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 5090.0,
-                "total_missed": 763500.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 5050.0,
+                "total_missed": 757500.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -660,9 +1258,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 124.0,
                 "sale_price": 5951.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 4509.0,
-                "total_missed": 559116.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 4469.0,
+                "total_missed": 554156.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -672,9 +1270,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 53.0,
                 "sale_price": 5950.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 4510.0,
-                "total_missed": 239030.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 4470.0,
+                "total_missed": 236910.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -684,9 +1282,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 285.0,
                 "sale_price": 6300.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 1124.0,
-                "total_missed": 320340.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 1123.0,
+                "total_missed": 320055.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -696,9 +1294,9 @@
                 "ticker": "POLI.TA",
                 "qty": 275.0,
                 "sale_price": 6399.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 1189.0,
-                "total_missed": 326975.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 1169.0,
+                "total_missed": 321475.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -720,9 +1318,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 799.0,
                 "sale_price": 6333.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 4127.0,
-                "total_missed": 3297473.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 4087.0,
+                "total_missed": 3265513.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -732,9 +1330,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 500.0,
                 "sale_price": 6588.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 3872.0,
-                "total_missed": 1936000.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 3832.0,
+                "total_missed": 1916000.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -744,9 +1342,9 @@
                 "ticker": "TEVA.TA",
                 "qty": 500.0,
                 "sale_price": 7840.0,
-                "current_price": 10460.0,
-                "diff_per_unit": 2620.0,
-                "total_missed": 1310000.0,
+                "current_price": 10420.0,
+                "diff_per_unit": 2580.0,
+                "total_missed": 1290000.0,
                 "currency": "ILS",
                 "is_success": false
             }
@@ -758,9 +1356,9 @@
                 "ticker": "POLI.TA",
                 "qty": 6576.0,
                 "sale_price": 4365.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3223.0,
-                "total_missed": 21194448.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3203.0,
+                "total_missed": 21062928.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -770,9 +1368,9 @@
                 "ticker": "POLI.TA",
                 "qty": 2320.0,
                 "sale_price": 4328.0,
-                "current_price": 7588.0,
-                "diff_per_unit": 3260.0,
-                "total_missed": 7563200.0,
+                "current_price": 7568.0,
+                "diff_per_unit": 3240.0,
+                "total_missed": 7516800.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -782,9 +1380,9 @@
                 "ticker": "DSCT.TA",
                 "qty": 6077.0,
                 "sale_price": 2490.0,
-                "current_price": 3579.0,
-                "diff_per_unit": 1089.0,
-                "total_missed": 6617853.0,
+                "current_price": 3578.0,
+                "diff_per_unit": 1088.0,
+                "total_missed": 6611776.0,
                 "currency": "ILS",
                 "is_success": false
             },
@@ -806,9 +1404,9 @@
                 "ticker": "LUMI.TA",
                 "qty": 2753.0,
                 "sale_price": 5475.0,
-                "current_price": 7424.0,
-                "diff_per_unit": 1949.0,
-                "total_missed": 5365597.0,
+                "current_price": 7423.0,
+                "diff_per_unit": 1948.0,
+                "total_missed": 5362844.0,
                 "currency": "ILS",
                 "is_success": false
             }
@@ -9369,7 +9967,7 @@
     ],
     "metadata": {
         "row_count": 450,
-        "generated_at": "2026-01-07T10:56:44.429265",
-        "version": "0.11"
+        "generated_at": "2026-01-07T11:52:46.226915",
+        "version": "0.14"
     }
 }

@@ -288,10 +288,10 @@
                     <div class="value">₪0</div>
                 </div>
                 <div class="card">
-                    <h2>Risk (Invested)</h2>
+                    <h2>Max Exposure (Risk)</h2>
                     <div class="value" id="val-invested">₪0</div>
                     <div style="font-size: 0.8rem; color: var(--accent-blue); margin-top: 0.2rem;">
-                        ROI: <span id="val-roi">0%</span>
+                        True ROI: <span id="val-roi">0%</span>
                     </div>
                 </div>
                 <div class="card">
@@ -305,18 +305,26 @@
             </div>
 
             <!-- Charts -->
-            <div class="charts-container">
+            <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr;">
                 <div class="card">
-                    <h2>Top Performers (P/L Impact)</h2>
-                    <div class="chart-wrapper">
-                        <canvas id="plChart"></canvas>
+                    <h2>Profit/Loss by Security (ILS)</h2>
+                    <div class="chart-container">
+                        <canvas id="chartPL"></canvas>
                     </div>
                 </div>
                 <div class="card">
-                    <h2>Currency Exposure (Transaction Count)</h2>
-                    <div class="chart-wrapper">
-                        <canvas id="currencyChart"></canvas>
+                    <h2>Currency Distribution</h2>
+                    <div class="chart-container">
+                        <canvas id="chartCurrency"></canvas>
                     </div>
+                </div>
+            </div>
+
+            <!-- EXPOSURE CHART -->
+            <div class="card" style="margin-top: 1rem;">
+                <h2>Capital at Risk Over Time (Exposure)</h2>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="chartExposure"></canvas>
                 </div>
             </div>
         </div>
@@ -506,7 +514,7 @@
             roiEl.textContent = `${summary.roi_percentage.toFixed(2)}%`;
             roiEl.style.color = summary.roi_percentage >= 0 ? '#10b981' : '#ef4444';
 
-            document.getElementById('lastUpdated').innerHTML = 
+            document.getElementById('lastUpdated').innerHTML =
                 `${new Date(data.metadata.generated_at).toLocaleString('en-US')} <br>
                 <span style="font-size: 0.75rem; color: #64748b;">
                     Exchange Rate: ${data.summary.exchange_rate}
@@ -520,10 +528,11 @@
             // 2. Overview Charts
             renderPLChart(data.charts.pl_by_security);
             renderCurrencyChart(data.charts.currency_distribution);
+            renderExposureChart(data.charts.exposure_history);
 
             // 3. Transactions Table
             allTransactions = data.transactions;
-            renderTable(allTransactions);
+            renderTable(data.transactions);
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 const filtered = allTransactions.filter(row =>
@@ -624,8 +633,53 @@
             });
         }
 
+
+
+        function renderExposureChart(historyData) {
+            if (!historyData || historyData.length === 0) return;
+
+            const ctx = document.getElementById('chartExposure').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: historyData.map(d => d.date),
+                    datasets: [{
+                        label: 'Capital Employed (ILS)',
+                        data: historyData.map(d => d.val),
+                        borderColor: '#3b82f6', // Accent blue
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Exposure: ' + fmtMoney(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false }, // Hide dates if too crowded, or true
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' }
+                        }
+                    }
+                }
+            });
+        }
+
         function renderPLChart(items) {
-            const ctx = document.getElementById('plChart').getContext('2d');
+            const ctx = document.getElementById('chartPL').getContext('2d');
             const colors = items.map(d => d.val >= 0 ? '#10b981' : '#ef4444');
             new Chart(ctx, {
                 type: 'bar',
@@ -651,7 +705,7 @@
         }
 
         function renderCurrencyChart(dataObj) {
-            const ctx = document.getElementById('currencyChart').getContext('2d');
+            const ctx = document.getElementById('chartCurrency').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {

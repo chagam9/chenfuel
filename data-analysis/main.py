@@ -309,33 +309,103 @@ def main():
     # Global Totals (Normalized to ILS)
     total_pl_gross_ils = df['profit_loss_ils'].sum()
     total_fees_ils = df['fees_ils'].sum()
-    total_tax_ils = df['total_tax_ils'].sum() # Already ILS
+    total_tax_ils = df['total_tax_ils'].sum() 
     
-    # Invested (Risk) Calculation
-    # Filter: Sales Only
-    # Invested = Proceeds (Net Amount) - Gross Profit
-    # Use Normalized columns!
+    # --- MAX EXPOSURE ALGORITHM ---
+    # We need to reconstruct the "Capital Employed" timeline.
+    # Sort ALL transactions by date
     
-    sales_indices = df['action_en'] == 'Sell'
-    total_proceeds_ils = df.loc[sales_indices, 'net_amount_ils'].sum()
-    total_gross_pl_sales_ils = df.loc[sales_indices, 'profit_loss_ils'].sum()
+    exposure_df = df.copy()
+    exposure_df.sort_values('date_obj', inplace=True)
     
-    total_invested_ils = total_proceeds_ils - total_gross_pl_sales_ils
+    # Calculate Delta for each row
+    # If Buy: Delta = + (Net Amount). Usually Net Amount is negative for Buy?
+    # Let's check: Yes, Buy consumes cash, so Net Amount is negative in bank, but Positive for "Invested Capital".
+    # If Sell: Delta = - (Principal). Principal = (Net Proceeds - Profit).
+    # Net Amount is positive for Sell.
     
-    # Net ROI
-    # ROI = (Net Profit / Invested) * 100
-    # Net Profit = Gross PL + Fees - Tax
-    # Note: Fees are usually negative. If CSV has them positive, logic reverses.
-    # Assuming fees are negative/deduction in 'profit_loss'? No, 'profit_loss' is usually Gross.
-    # Let's assume standard: Net = Gross + Fees (if neg) - Tax.
+    def calculate_capital_delta(row):
+        # We need absolute values of what the ASSET cost was.
+        
+        # 'net_amount_ils' is usually:
+        # Buy: -1000 ILS (Cash out)
+        # Sell: +1200 ILS (Cash in)
+        
+        net_val = row['net_amount_ils']
+        action = row['action_en'] # Buy / Sell
+        
+        if action == 'Buy':
+            # We INVESTED money. Capital At Risk increases.
+            # abs(-1000) = 1000
+            return abs(net_val)
+        
+        elif action == 'Sell':
+            # We RELEASED money. Capital At Risk decreases.
+            # But we only release the PRINCIPAL. The Profit is new money, not capital return.
+            # Principal = Proceeds (Net Amount) - Net Profit? 
+            # OR Principal = Proceeds - Gross Profit + Deductions?
+            
+            # Simplest: Cost Basis = Proceeds - Profit.
+            # If I sold for 1200 and profit was 200, my cost was 1000.
+            # So I reduce exposure by 1000.
+            
+            # Note: profit_loss_ils is the realized profit for this row.
+            proceeds = abs(net_val)
+            profit = row['profit_loss_ils']
+            
+            # Cost Basis (Principal)
+            principal = proceeds - profit
+            
+            # Decrease exposure
+            return -1 * principal
+            
+        return 0
+
+    exposure_df['capital_delta'] = exposure_df.apply(calculate_capital_delta, axis=1)
+    
+    # Group by Date to handle same-day trades cleanly
+    daily_deltas = exposure_df.groupby('date_obj')['capital_delta'].sum()
+    
+    # Cumulative Sum to get "Current Capital At Risk"
+    exposure_series = daily_deltas.cumsum()
+    
+    # Handle negative exposure?
+    # If data is partial (missing initial buys), this might go negative.
+    # User just wants "Max Exposure".
+    # If it goes negative, it implies our baseline 0 was wrong.
+    # But strictly, Max Exposure is the Max(cumsum).
+    # What if it starts at -50000? Max might be -20000.
+    # We should offset it so the minimum is 0? Or assume 0 is real 0?
+    # "Invested 10, Sold 8 time".
+    # Let's assume the series represents "Change in Capital".
+    # Max Exposure = max(exposure_series).
+    # Ideally we'd impose a floor of 0 if we assume clean data, but clean data isn't guaranteed.
+    
+    # Let's clean the series for the chart: Date -> Value
+    exposure_chart_data = []
+    
+    # Determine Max
+    if not exposure_series.empty:
+        max_exposure_ils = exposure_series.max()
+        # Ensure it's not negative (if huge history missing)
+        if max_exposure_ils < 0:
+            max_exposure_ils = 0 # Fallback
+    else:
+        max_exposure_ils = 0
+        
+    # Convert series to list of dicts for frontend
+    # exposure_series index is Timestamps
+    exposure_chart_data = [{"date": ts.strftime('%Y-%m-%d'), "val": val} for ts, val in exposure_series.items()]
+
+    # Net ROI Calculation
+    # True ROI = Total Net Profit / Max Exposure
     
     total_net_return_ils = total_pl_gross_ils + total_fees_ils - total_tax_ils
     
     roi_percentage = 0.0
-    if total_invested_ils != 0:
-        roi_percentage = (total_net_return_ils / total_invested_ils) * 100
+    if max_exposure_ils > 0:
+        roi_percentage = (total_net_return_ils / max_exposure_ils) * 100
 
-    # Chart P/L (Using original values or normalized? Normalized is better for comparison)
     security_pl = df.groupby('symbol')['profit_loss_ils'].sum().reset_index()
     security_pl.columns = ['name', 'val']
     security_pl = security_pl.sort_values('val', ascending=False)
@@ -373,14 +443,15 @@ def main():
             "total_pl": total_pl_gross_ils,
             "total_fees": total_fees_ils,
             "total_tax": total_tax_ils,
-            "total_invested": total_invested_ils,
+            "total_invested": max_exposure_ils, # Replaced 'turnover' with Max Exposure
             "roi_percentage": roi_percentage,
             "total_net_return": total_net_return_ils,
             "exchange_rate": "Historical (Date Specific)"
         },
         "charts": {
             "pl_by_security": chart_pl_data,
-            "currency_distribution": chart_currency_data
+            "currency_distribution": chart_currency_data,
+            "exposure_history": exposure_chart_data
         },
         "what_if": {
              "opportunities": opportunity_list,

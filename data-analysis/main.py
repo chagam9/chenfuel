@@ -280,8 +280,28 @@ def main():
     print(f"Analyzed {len(opportunity_list)} sales events.")
     print(f"Saving dashboard data to {output_file}...")
     
+    # Sanitize NaNs before dumping
+    # Function to recursively replace NaN with None (which becomes null in JSON)
+    # or handle Infinity if needed.
+    class NaNEncoder(json.JSONEncoder):
+        def default(self, obj):
+            import math
+            if isinstance(obj, float):
+                if math.isnan(obj) or math.isinf(obj):
+                    return None
+            if isinstance(obj, pd.Timestamp):
+                return str(obj)
+            return super().default(obj)
+            
+    # Alternatively, simply replace in the big dict:
+    dashboard_data_sanitized = json.loads(json.dumps(dashboard_data, default=str).replace("NaN", "null"))
+
     with open(output_file, "w") as f:
-        json.dump(dashboard_data, f, indent=4, default=str)
+        # Standard json.dump might still output NaN if allow_nan=True (default).
+        # We want to force it to valid JSON.
+        # But safest is to simple string manip or ignore_nan. 
+        # Actually standard simple fix:
+        json.dump(dashboard_data_sanitized, f, indent=4)
         
     print("Analysis Complete.")
 

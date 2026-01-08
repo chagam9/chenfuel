@@ -594,10 +594,23 @@
                     Exchange Rate: ${data.summary.exchange_rate}
                 </span>`;
 
-            // Analysis Period
+            // Analysis Period (Duration)
             if (data.summary.period_start && data.summary.period_end) {
-                document.getElementById('analysisPeriod').textContent =
-                    `Analysis Period: ${data.summary.period_start} - ${data.summary.period_end}`;
+                const parseDate = (str) => {
+                    if (!str) return null;
+                    const parts = str.split('/');
+                    return new Date(parts[2], parts[1] - 1, parts[0]);
+                };
+                const start = parseDate(data.summary.period_start);
+                const end = parseDate(data.summary.period_end);
+
+                if (start && end) {
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    document.getElementById('analysisPeriod').textContent = `Analysis Duration: ${diffDays} Days`;
+                } else {
+                    document.getElementById('analysisPeriod').textContent = `Analysis Period: ${data.summary.period_start} - ${data.summary.period_end}`;
+                }
             }
 
             // Version

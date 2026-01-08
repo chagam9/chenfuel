@@ -284,24 +284,11 @@
 <body>
 
     <!-- Login Overlay -->
-    <div id="lockScreen" style="
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(10px);
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        z-index: 9999; transition: opacity 0.5s;
-    ">
-        <h2 style="margin-bottom: 2rem; color: #fff;">Enter Access Code</h2>
-        <input type="password" id="pinInput" maxlength="4" placeholder="****" style="
-            font-size: 2rem; padding: 0.5rem 1rem; text-align: center; border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2); background: transparent; color: #fff; width: 200px;
-        ">
-        <p id="errorMsg" style="color: #ef4444; margin-top: 1rem; opacity: 0; transition: opacity 0.3s;">Incorrect PIN
-        </p>
-    </div>
+    <!-- Login Overlay REMOVED -->
 
     <!-- Main Content Wrapper -->
-    <div id="mainContent" style="filter: blur(8px); transition: filter 0.5s;">
+    <!-- Main Content Wrapper -->
+    <div id="mainContent">
 
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
@@ -601,7 +588,7 @@
             roiEl.textContent = `${summary.roi_percentage.toFixed(2)}%`;
             roiEl.style.color = summary.roi_percentage >= 0 ? '#10b981' : '#ef4444';
 
-            document.getElementById('lastUpdated').innerHTML = 
+            document.getElementById('lastUpdated').innerHTML =
                 `${new Date(data.metadata.generated_at).toLocaleString('en-US')} <br>
                 <span style="font-size: 0.75rem; color: #64748b;">
                     Exchange Rate: ${data.summary.exchange_rate}
@@ -609,7 +596,7 @@
 
             // Analysis Period
             if (data.summary.period_start && data.summary.period_end) {
-                 document.getElementById('analysisPeriod').textContent = 
+                document.getElementById('analysisPeriod').textContent =
                     `Analysis Period: ${data.summary.period_start} - ${data.summary.period_end}`;
             }
 

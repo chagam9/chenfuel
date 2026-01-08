@@ -450,13 +450,14 @@ def main():
         print(f"Warning: Could not save version file: {e}")
 
     # --- 5. Final Output ---
+    # User Request: Main "Risk" Card should be Average Exposure, and ROI should be ROAC.
     dashboard_data = {
         "summary": {
             "total_pl": total_pl_gross_ils,
             "total_fees": total_fees_ils,
             "total_tax": total_tax_ils,
-            "total_invested": max_exposure_ils,
-            "roi_percentage": roi_percentage,
+            "total_invested": avg_exposure_ils, # Now Average
+            "roi_percentage": roac_percentage,  # Now ROAC
             "total_net_return": total_net_return_ils,
             "exchange_rate": "Historical (Date Specific)",
             "advanced_metrics": {
@@ -464,7 +465,8 @@ def main():
                 "profit_factor": profit_factor,
                 "win_rate": win_rate,
                 "max_drawdown": max_drawdown_ils,
-                "sharpe_ratio": sharpe_ratio
+                "sharpe_ratio": sharpe_ratio,
+                "max_exposure": max_exposure_ils # Preserved here
             }
         },
         "charts": {

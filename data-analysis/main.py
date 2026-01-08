@@ -451,6 +451,10 @@ def main():
 
     # --- 5. Final Output ---
     # User Request: Main "Risk" Card should be Average Exposure, and ROI should be ROAC.
+    
+    analysis_start = df['date_obj'].min().strftime('%d/%m/%Y')
+    analysis_end = df['date_obj'].max().strftime('%d/%m/%Y')
+    
     dashboard_data = {
         "summary": {
             "total_pl": total_pl_gross_ils,
@@ -460,6 +464,8 @@ def main():
             "roi_percentage": roac_percentage,  # Now ROAC
             "total_net_return": total_net_return_ils,
             "exchange_rate": "Historical (Date Specific)",
+            "period_start": analysis_start,
+            "period_end": analysis_end,
             "advanced_metrics": {
                 "roac_percentage": roac_percentage,
                 "profit_factor": profit_factor,

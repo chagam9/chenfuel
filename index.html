@@ -615,11 +615,17 @@
             roiEl.textContent = `${summary.roi_percentage.toFixed(2)}%`;
             roiEl.style.color = summary.roi_percentage >= 0 ? '#10b981' : '#ef4444';
 
-            document.getElementById('lastUpdated').innerHTML =
+            document.getElementById('lastUpdated').innerHTML = 
                 `${new Date(data.metadata.generated_at).toLocaleString('en-US')} <br>
                 <span style="font-size: 0.75rem; color: #64748b;">
                     Exchange Rate: ${data.summary.exchange_rate}
                 </span>`;
+
+            // Analysis Period
+            if (data.summary.period_start && data.summary.period_end) {
+                 document.getElementById('analysisPeriod').textContent = 
+                    `Analysis Period: ${data.summary.period_start} - ${data.summary.period_end}`;
+            }
 
             // Version
             if (data.metadata.version) {

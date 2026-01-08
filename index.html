@@ -643,9 +643,21 @@
             }
 
             // 2. Overview Charts
-            renderPLChart(data.charts.pl_by_security);
-            renderCurrencyChart(data.charts.currency_distribution);
-            renderExposureChart(data.charts.exposure_history);
+            try {
+                if (data.charts) {
+                    renderPLChart(data.charts.pl_by_security);
+                    renderCurrencyChart(data.charts.currency_distribution);
+                    renderExposureChart(data.charts.exposure_history);
+                } else {
+                    throw new Error("Missing charts data in JSON");
+                }
+            } catch (e) {
+                console.error("Chart Rendering Error:", e);
+                const loading = document.getElementById('loading');
+                loading.style.display = 'block';
+                loading.innerText = "Chart Error: " + e.message;
+                loading.style.color = '#ef4444';
+            }
 
             // 3. Transactions Table
             allTransactions = data.transactions;

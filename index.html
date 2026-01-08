@@ -545,23 +545,9 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // --- Lock Screen Logic ---
-        const PIN = '1234';
-        const pinInput = document.getElementById('pinInput');
-        window.setTimeout(() => pinInput.focus(), 100);
-
-        pinInput.addEventListener('input', (e) => {
-            if (e.target.value === PIN) {
-                document.getElementById('lockScreen').style.opacity = '0';
-                document.getElementById('mainContent').style.filter = 'none';
-                setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
-            } else if (e.target.value.length === 4) {
-                const err = document.getElementById('errorMsg');
-                err.style.opacity = '1';
-                setTimeout(() => err.style.opacity = '0', 2000);
-                e.target.value = '';
-            }
-        });
+        // --- Lock Screen Logic (REMOVED) ---
+        // const PIN = '1234'; 
+        // ... removed as per user request ...
 
         // --- Data Logic ---
         const fmtMoney = (num, currency = 'ILS') => new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(num);

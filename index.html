@@ -803,6 +803,9 @@
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
+                                title: function (context) {
+                                    return 'Date: ' + context[0].label;
+                                },
                                 label: function (context) {
                                     return 'Exposure: ' + fmtMoney(context.raw);
                                 }
@@ -810,15 +813,15 @@
                         }
                     },
                     scales: {
-                        x: { 
-                            display: true, 
-                            ticks: { 
-                                color: '#94a3b8', 
+                        x: {
+                            display: true,
+                            ticks: {
+                                color: '#94a3b8',
                                 maxTicksLimit: 8,
                                 maxRotation: 0,
                                 autoSkip: true
                             },
-                            grid: { display: false } 
+                            grid: { display: false }
                         },
                         y: {
                             beginAtZero: true,

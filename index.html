@@ -811,24 +811,30 @@
                                 }
                             }
                         }
-                    },
-                    scales: {
-                        x: {
-                            display: true,
-                            ticks: {
-                                color: '#94a3b8',
-                                maxTicksLimit: 8,
-                                maxRotation: 0,
-                                autoSkip: true
-                            },
-                            grid: { display: false }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#1e293b' },
-                            ticks: { color: '#94a3b8' }
-                        }
                     }
+                }
+            },
+                interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+                scales: {
+                x: {
+                    display: true,
+                    ticks: {
+                        color: '#94a3b8',
+                        maxTicksLimit: 8,
+                        maxRotation: 0,
+                        autoSkip: true
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#1e293b' },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
                 }
             });
         }

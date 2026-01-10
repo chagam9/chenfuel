@@ -418,8 +418,22 @@ def main():
     if max_exposure_ils > 0:
         roi_percentage = (total_net_return_ils / max_exposure_ils) * 100
 
-    security_pl = df.groupby('symbol')['profit_loss_ils'].sum().reset_index()
-    security_pl.columns = ['name', 'val']
+    # Calculate Cost Basis for Percentage Return
+    df['cost_basis_ils'] = df['net_amount_ils'] - df['profit_loss_ils']
+    
+    security_pl = df.groupby('symbol')[['profit_loss_ils', 'cost_basis_ils']].sum().reset_index()
+    
+    # Calculate Percentage
+    security_pl['val_pct'] = 0.0
+    mask = security_pl['cost_basis_ils'] != 0
+    # Avoid division by zero or tiny numbers to prevent massive spikes
+    mask = mask & (security_pl['cost_basis_ils'].abs() > 10) 
+    security_pl.loc[mask, 'val_pct'] = (security_pl.loc[mask, 'profit_loss_ils'] / security_pl.loc[mask, 'cost_basis_ils']) * 100
+    
+    security_pl = security_pl.rename(columns={'symbol': 'name'})
+    security_pl['val'] = security_pl['val_pct'] # Chart expects 'val'
+    security_pl['val_abs'] = security_pl['profit_loss_ils'] # Keep absolute for tooltip
+    
     security_pl = security_pl.sort_values('val', ascending=False)
     chart_pl_data = pd.concat([security_pl.head(5), security_pl.tail(5)]).drop_duplicates().to_dict(orient='records')
 

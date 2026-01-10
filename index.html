@@ -341,7 +341,7 @@
             <!-- Charts -->
             <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr;">
                 <div class="card">
-                    <h2>Profit/Loss by Security (ILS)</h2>
+                    <h2>Profit/Loss by Security (%)</h2>
                     <div class="chart-container">
                         <canvas id="chartPL"></canvas>
                     </div>
@@ -854,10 +854,27 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const raw = context.raw;
+                                    const item = items[context.dataIndex];
+                                    return [`ROI: ${raw.toFixed(2)}%`, `P/L: ${fmtMoney(item.val_abs)}`];
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                        y: {
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function (value) { return value + '%'; }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
                     }
                 }
             });

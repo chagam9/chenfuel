@@ -418,23 +418,33 @@ def main():
     if max_exposure_ils > 0:
         roi_percentage = (total_net_return_ils / max_exposure_ils) * 100
 
-    # Calculate Cost Basis for Percentage Return
-    df['cost_basis_ils'] = df['net_amount_ils'] - df['profit_loss_ils']
+    # Calculate Per-Security ROI using Invested Capital
+    # Invested Capital = Sum of absolute Net Amount for 'Buy' actions (negative net_amount)
     
-    security_pl = df.groupby('symbol')[['profit_loss_ils', 'cost_basis_ils']].sum().reset_index()
+    # helper for invested
+    df['invested_ils'] = df['net_amount_ils'].apply(lambda x: abs(x) if x < 0 else 0)
     
-    # Calculate Percentage
-    security_pl['val_pct'] = 0.0
-    mask = security_pl['cost_basis_ils'] != 0
-    # Avoid division by zero or tiny numbers to prevent massive spikes
-    mask = mask & (security_pl['cost_basis_ils'].abs() > 10) 
-    security_pl.loc[mask, 'val_pct'] = (security_pl.loc[mask, 'profit_loss_ils'] / security_pl.loc[mask, 'cost_basis_ils']) * 100
+    grouped = df.groupby('symbol').agg({
+        'profit_loss_ils': 'sum',
+        'invested_ils': 'sum'
+    }).reset_index()
     
-    security_pl = security_pl.rename(columns={'symbol': 'name'})
-    security_pl['val'] = security_pl['val_pct'] # Chart expects 'val'
-    security_pl['val_abs'] = security_pl['profit_loss_ils'] # Keep absolute for tooltip
+    grouped['val_pct'] = 0.0
     
-    security_pl = security_pl.sort_values('val', ascending=False)
+    # ROI = Profit / Invested
+    # Handle cases where invested is 0 (e.g. data error or only sell rows)
+    mask_inv = grouped['invested_ils'] > 1 
+    grouped.loc[mask_inv, 'val_pct'] = (grouped.loc[mask_inv, 'profit_loss_ils'] / grouped.loc[mask_inv, 'invested_ils']) * 100
+    
+    # If invested is 0 but profit exists, this is technically infinite ROI. 
+    # We can clamp or set to 0 to avoid UI bugs.
+    # For now, leave as 0 if no invested found.
+
+    grouped = grouped.rename(columns={'symbol': 'name'})
+    grouped['val'] = grouped['val_pct']
+    grouped['val_abs'] = grouped['profit_loss_ils']
+    
+    security_pl = grouped.sort_values('val', ascending=False)
     chart_pl_data = pd.concat([security_pl.head(5), security_pl.tail(5)]).drop_duplicates().to_dict(orient='records')
 
     currency_counts = df['currency'].value_counts().reset_index()
